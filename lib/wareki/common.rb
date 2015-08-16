@@ -54,13 +54,15 @@ module Wareki
     end
 
     def find_year(d)
-      d = _to_date(d)
-      YEAR_DEFS.bsearch{|y| y.end > d.jd }
+      jd = _to_jd(d)
+      YEAR_DEFS.bsearch{|y| y.end > jd }
     end
 
     def find_era(d)
       jd = _to_jd(d)
-      ERA_DEFS.bsearch{|e| e.end > jd }
+      e = ERA_DEFS.bsearch{|e| e.end > jd }
+      e.start > jd and return nil
+      e
     end
   end
 end
