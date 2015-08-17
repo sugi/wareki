@@ -16,11 +16,11 @@ module Wareki
   ALT_MONTH_NAME = %w(睦月 如月 弥生 卯月 皐月 水無月 文月 葉月 長月 神無月 霜月 師走).freeze
   REGEX = %r{
     (?<era_name>西暦|#{ERA_BY_NAME.keys.join('|')})?
-    (?:(?<year>[#{NUM_CHARS}]+)年)?
+    (?:(?<year>[元#{NUM_CHARS}]+)年)?
     (?:(?<is_leap>閏|潤|うるう)?
-      (?:(?<month>[#{NUM_CHARS}]+)月 | 
+      (?:(?<month>[#{NUM_CHARS}]+)月 |
          (?<alt_month>#{ALT_MONTH_NAME.join('|')})))?
-    (?:(?<day>[#{NUM_CHARS}]+)日)?
+    (?:(?<day>[元朔晦#{NUM_CHARS}]+)日)?
   }x
 
   class UnsupportedDateRange < StandardError; end
@@ -33,13 +33,13 @@ module Wareki
       str == "零" and return 0
       str.to_s.each_char do |c|
         case c
-        when *%w(一 二 三 四 五 六 七 八 九 肆 1 2 3 4 5 6 7 8 9 １ ２ ３ ４ ５ ６ ７ ８ ９)
+        when *%w(元 朔 一 二 三 四 五 六 七 八 九 肆 1 2 3 4 5 6 7 8 9 １ ２ ３ ４ ５ ６ ７ ８ ９)
           if curnum
             curnum *= 10
           else
             curnum = 0
           end
-          curnum += c.tr("一二三四五六七八九１２３４５６７８９肆", "1234567891234567894").to_i
+          curnum += c.tr("一二三四五六七八九１２３４５６７８９肆元朔", "123456789123456789411").to_i
         when "〇", "０", "0"
           curnum and curnum *= 10
         when "卄", "廿"
@@ -80,25 +80,60 @@ module Wareki
     def alt_month_name(month)
       ALT_MONTH_NAME[month - 1]
     end
-    
+
     def parse(str)
       match = REGEX.match(str.to_s.gsub(/[[:space:]]/, ''))
       if !match || !match[:year]
         raise ArgumentError, "Invaild Date: #{str}"
       end
+      era = match[:era_name]
       year = kan_to_i(match[:year])
       month = 1
       day = 1
+
+      if era.to_s != "" && !ERA_BY_NAME[era]
+        raise ArgumentError, "Date parse failed: Invalid era name '#{match[:era_name]}'"
+      end
+
       if match[:month]
         month = kan_to_i(match[:month])
       elsif match[:alt_month]
         month = alt_month_name_to_i(match[:alt_month])
       end
+
       if match[:day]
-        day = kan_to_i(match[:day])
+        if match[:day] == "晦"
+          if year >= GREGORIAN_START_YEAR
+            tmp_y = year
+            tmp_m = month
+            if month == 12
+              tmp_y += 1
+              tmp_m = 1
+            else
+              tmp_m += 1
+            end
+            day = (::Date.new(tmp_y, tmp_m, 1, Date::GREGORIAN)-1).day
+          else
+            yobj = find_year(year)
+            month_idx = month - 1
+            if match[:is_leap] || yobj.leap_month && yobj.leap_month < month
+              month_idx += 1
+            end
+            day = yobj.month_days[month_idx]
+          end
+        else
+          day = kan_to_i(match[:day])
+        end
       end
 
-      Wareki::Date.new(match[:era_name], year, month, day, !!match[:is_leap])
+      if (era == "明治" && year == 5 ||
+          era.to_s == "" && year == 1872 ||
+          era == "皇紀" && year == 2532) &&
+          month == 12 && day > 2
+        raise ArgumentError, "Invaild Date: #{str}"
+      end
+
+      Wareki::Date.new(era, year, month, day, !!match[:is_leap])
     end
 
     def parse_to_date(str)
@@ -108,7 +143,7 @@ module Wareki
         ::Date.parse(str)
       end
     end
-    
+
     def _to_date(d)
       if d.kind_of? ::Date
         d # nothing to do
