@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+# coding: utf-8
 require 'open-uri'
 require 'nokogiri'
 require 'date'
@@ -17,9 +18,6 @@ class Wareki::Generator
       f.puts "module Wareki"
       f.puts "  Era = Struct.new(:name, :year, :start, :end)"
       f.puts dump_era
-      f.puts "  ERA_BY_NAME = Hash[*(ERA_NORTH_DEFS + ERA_DEFS).map {|g| [g.name, g]}.flatten]"
-      f.puts "  ERA_BY_NAME['皇紀'] = ERA_BY_NAME['神武天皇即位紀元'] = Era.new('皇紀', -660, #{Date.new(-660, 2, 11, Date::GREGORIAN).jd}, #{INF_DATE.jd})"
-      f.puts "  ERA_BY_NAME.freeze"
       f.puts "end"
     end
   end

@@ -499,7 +499,4 @@ module Wareki
     Era.new("昭和", 1926, 2424875, 2447534),
     Era.new("平成", 1989, 2447535, 1684383730585466947585),
   ].freeze
-  ERA_BY_NAME = Hash[*(ERA_NORTH_DEFS + ERA_DEFS).map {|g| [g.name, g]}.flatten]
-  ERA_BY_NAME['皇紀'] = ERA_BY_NAME['神武天皇即位紀元'] = Era.new('皇紀', -660, 1480041, 1684383730585466947585)
-  ERA_BY_NAME.freeze
 end

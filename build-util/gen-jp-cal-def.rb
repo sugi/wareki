@@ -40,5 +40,4 @@ calinfo.each do |year, d|
   puts "    Year.new(#{year}, #{d[:start]}, #{d[:end]}, #{d[:month_starts].inspect}, #{d[:leap].inspect}),"
 end
 puts "  ].freeze"
-puts "  YEAR_BY_NUM = Hash[*YEAR_DEFS.map{|y| [y.year, y]}.flatten].freeze"
 puts "end"
