@@ -136,9 +136,9 @@ module Wareki
       Wareki::Date.new(era, year, month, day, !!match[:is_leap])
     end
 
-    def parse_to_date(str)
+    def parse_to_date(str, start = ::Date::ITALY)
       begin
-        parse(str)
+        parse(str).to_date(start)
       rescue ArgumentError => e
         ::Date.parse(str)
       end

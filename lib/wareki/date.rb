@@ -5,7 +5,7 @@ module Wareki
   class Date
     attr_reader :jd
     attr_accessor :year, :month, :day, :era_year, :era_name
-    
+
     def self.jd(d)
       era = Utils.find_era(d)
       era or raise UnsupportedDateRange, "Cannot find era for date #{d.inspect}"
@@ -75,12 +75,8 @@ module Wareki
       @jd = yobj.month_starts[month_idx] + day - 1
     end
 
-    def to_date
-      ::Date.jd(jd)
-    end
-
-    def to_datetime
-      to_date.to_datetime
+    def to_date(start = ::Date::ITALY)
+      ::Date.jd(jd, start)
     end
 
     def __set_jd(v)
