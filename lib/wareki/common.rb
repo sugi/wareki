@@ -81,64 +81,9 @@ module Wareki
       ALT_MONTH_NAME[month - 1]
     end
 
-    def parse(str)
-      match = REGEX.match(str.to_s.gsub(/[[:space:]]/, ''))
-      if !match || !match[:year]
-        raise ArgumentError, "Invaild Date: #{str}"
-      end
-      era = match[:era_name]
-      year = kan_to_i(match[:year])
-      month = 1
-      day = 1
-
-      if era.to_s != "" && !ERA_BY_NAME[era]
-        raise ArgumentError, "Date parse failed: Invalid era name '#{match[:era_name]}'"
-      end
-
-      if match[:month]
-        month = kan_to_i(match[:month])
-      elsif match[:alt_month]
-        month = alt_month_name_to_i(match[:alt_month])
-      end
-
-      if match[:day]
-        if match[:day] == "晦"
-          if year >= GREGORIAN_START_YEAR
-            tmp_y = year
-            tmp_m = month
-            if month == 12
-              tmp_y += 1
-              tmp_m = 1
-            else
-              tmp_m += 1
-            end
-            day = (::Date.new(tmp_y, tmp_m, 1, Date::GREGORIAN)-1).day
-          else
-            yobj = find_year(year)
-            month_idx = month - 1
-            if match[:is_leap] || yobj.leap_month && yobj.leap_month < month
-              month_idx += 1
-            end
-            day = yobj.month_days[month_idx]
-          end
-        else
-          day = kan_to_i(match[:day])
-        end
-      end
-
-      if (era == "明治" && year == 5 ||
-          era.to_s == "" && year == 1872 ||
-          era == "皇紀" && year == 2532) &&
-          month == 12 && day > 2
-        raise ArgumentError, "Invaild Date: #{str}"
-      end
-
-      Wareki::Date.new(era, year, month, day, !!match[:is_leap])
-    end
-
-    def parse_to_date(str, start = ::Date::ITALY)
+    def parse(str, start = ::Date::ITALY)
       begin
-        parse(str).to_date(start)
+        Date.parse(str).to_date(start)
       rescue ArgumentError => e
         ::Date.parse(str)
       end
