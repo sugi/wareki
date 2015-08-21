@@ -70,7 +70,65 @@ module Wareki
       ret
     end
 
-    def i_to_kan(num)
+    def i_to_kan(num, opts = {})
+      ret = ''
+      {
+        '京' => 10000000000000000,
+        '兆' => 1000000000000,
+        '億' => 100000000,
+        '万' => 10000,
+        ''   => 1,
+      }.each do |unit4, rank4|
+        i = (num / rank4).to_i % 10000
+        if i == 0
+          next
+        elsif i == 1
+          ret += "一#{unit4}"
+          next
+        end
+        {
+          '千' => 1000,
+          '百' => 100,
+          '十' => 10,
+        }.each do |unit1, rank1|
+          i = (num / rank1).to_i % 10
+          if i == 0
+            next
+          elsif i == 1
+            ret += unit1
+          else
+            ret += i.to_s.tr('123456789', '一二三四五六七八九') + unit1
+          end
+        end
+        if (num % 10) != 0
+          ret += (num % 10).to_s.tr('123456789', '一二三四五六七八九')
+        end
+        ret += unit4
+      end
+      ret
+    end
+
+    def last_day_of_month(year, month, is_leap)
+      if year >= GREGORIAN_START_YEAR
+        tmp_y = year
+        tmp_m = month
+        if month == 12
+          tmp_y += 1
+          tmp_m = 1
+        else
+          tmp_m += 1
+        end
+        day = (::Date.new(tmp_y, tmp_m, 1, Date::GREGORIAN)-1).day
+      else
+        yobj = YEAR_BY_NUM[year] or
+          raise UnsupportedDateRange, "Cannot find year #{self.inspect}"
+        month_idx = month - 1
+        if is_leap || yobj.leap_month && yobj.leap_month < month
+          month_idx += 1
+        end
+        day = yobj.month_days[month_idx]
+      end
+      day
     end
 
     def alt_month_name_to_i(name)

@@ -28,24 +28,7 @@ module Wareki
 
       if match[:day]
         if match[:day] == "晦"
-          if year >= GREGORIAN_START_YEAR
-            tmp_y = year
-            tmp_m = month
-            if month == 12
-              tmp_y += 1
-              tmp_m = 1
-            else
-              tmp_m += 1
-            end
-            day = (::Date.new(tmp_y, tmp_m, 1, Date::GREGORIAN)-1).day
-          else
-            yobj = Utils.find_year(year)
-            month_idx = month - 1
-            if match[:is_leap] || yobj.leap_month && yobj.leap_month < month
-              month_idx += 1
-            end
-            day = yobj.month_days[month_idx]
-          end
+          day = Utils.last_day_of_month(ERA_BY_NAME[era].year + year -1, month, match[:is_leap])
         else
           day = Utils.kan_to_i(match[:day])
         end
@@ -112,6 +95,24 @@ module Wareki
       @is_leap_month = v
     end
 
+    def __set_jd(v)
+      @jd = v
+    end
+
+    def month_index
+      if @era_name == "西暦" || @year >= GREGORIAN_START_YEAR
+        return month -1
+      end
+
+      yobj = YEAR_BY_NUM[@year] or
+        raise UnsupportedDateRange, "Cannot get year info of #{self.inspect}"
+      idx = month - 1
+      if leap_month? || yobj.leap_month && month > yobj.leap_month
+        idx += 1
+      end
+      idx
+    end
+
     def jd
       @jd and return @jd
 
@@ -123,19 +124,62 @@ module Wareki
 
       yobj = YEAR_BY_NUM[@year] or
         raise UnsupportedDateRange, "Cannot convert to jd #{self.inspect}"
-      month_idx = month - 1
-      if leap_month? || yobj.leap_month && month > yobj.leap_month
-        month_idx += 1
-      end
-      @jd = yobj.month_starts[month_idx] + day - 1
+      @jd = yobj.month_starts[month_index] + day - 1
     end
 
     def to_date(start = ::Date::ITALY)
       ::Date.jd(jd, start)
     end
 
-    def __set_jd(v)
-      @jd = v
+    def strftime(format = "%JF")
+      fmt_pat = {
+        e: era_name,
+        g: era_name.to_s == "" ? '' : era_year,
+        G: era_name.to_s == "" ? '' : era_year.to_s.tr('0123456789', '０１２３４５６７８９'),
+        Gk: era_name.to_s == "" ? '' : Utils.i_to_kan(era_year),
+        GK: era_name.to_s == "" ? '' : Utils.i_to_kan(era_year),
+        o: year,
+        O: year.to_s.tr('0123456789', '０１２３４５６７８９'),
+        Ok: Utils.i_to_kan(year),
+        i: imperial_year,
+        I: imperial_year.to_s.tr('0123456789', '０１２３４５６７８９'),
+        Ik: Utils.i_to_kan(imperial_year),
+        s: month,
+        S: month.to_s.tr('0123456789', '０１２３４５６７８９'),
+        Sk: Utils.i_to_kan(month),
+        SK: ALT_MONTH_NAME[month-1],
+        l: leap_month? ? "'" : "",
+        L: leap_month? ? "’" : "",
+        Lk: leap_month? ? "閏" : "",
+        d: day,
+        D: day.to_s.tr('0123456789', '０１２３４５６７８９'),
+        Dk: Utils.i_to_kan(day),
+        DK: Utils.i_to_kan(day),
+      }
+      era_year == 1 and
+        fmt_pat[:GK] = "元"
+      if month == 1 && !leap_month? && day == 1
+        fmt_pat[:DK] = "元"
+      elsif day == 1
+        fmt_pat[:DK] = "朔"
+      elsif day == Utils.last_day_of_month(year, month, leap_month?)
+        fmt_pat[:DK] = "晦"
+      end
+
+      fmt_pat.update({
+        m: "#{fmt_pat[:s]}#{fmt_pat[:l]}",
+        M: "#{fmt_pat[:Lk]}#{fmt_pat[:S]}",
+        Mk: "#{fmt_pat[:Lk]}#{fmt_pat[:Sk]}",
+        y: "#{fmt_pat[:e]}#{fmt_pat[:g]}",
+        Y: "#{fmt_pat[:e]}#{fmt_pat[:G]}",
+        Yk: "#{fmt_pat[:e]}#{fmt_pat[:Gk]}",
+        YK: "#{fmt_pat[:e]}#{fmt_pat[:GK]}",
+        f: "#{fmt_pat[:e]}#{fmt_pat[:g]}年#{fmt_pat[:s]}#{fmt_pat[:l]}月#{fmt_pat[:d]}日",
+        F: "#{fmt_pat[:e]}#{fmt_pat[:Gk]}年#{fmt_pat[:Lk]}#{fmt_pat[:Sk]}月#{fmt_pat[:Dk]}日",
+      })
+      ret = format.to_str.gsub(/%J([fFyYegGoOiImMsSlLdD][kK]?)/) { fmt_pat[$1.to_sym] }
+      ret.index("%") or return ret
+      to_date.strftime(ret)
     end
   end
 end

@@ -40,4 +40,18 @@ describe Wareki::Date do
     expect(u.parse("元仁二年　元日").to_date).to eq Date.new(1225, 2, 9)
     expect(u.parse("寿永三年 五月 晦日").to_date).to eq Date.new(1184, 7, 9)
   end
+
+  it "can be formatted in string" do
+    d = Wareki::Date.new("天和", 3, 5, 4, true)
+    expect(d.strftime).to eq "天和三年閏五月四日"
+    expect(d.strftime("%JF")).to eq "天和三年閏五月四日"
+    expect(d.strftime("%Jf")).to eq "天和3年5'月4日"
+    expect(d.strftime("皇紀で%Ji年%Jm月%Jd日")).to eq "皇紀で2343年5'月4日"
+    expect(d.strftime("%JYk年　%JSK")).to eq "天和三年　皐月"
+    expect(d.strftime("西暦だと%Y年%m月%d日")).to eq "西暦だと1683年06月28日"
+    expect(Wareki::Date.parse("寿永三年 五月 晦日").strftime("%Jd日")).to eq "30日"
+    expect(Wareki::Date.parse("寿永2年 3月 晦日").strftime("%Jd日")).to eq "29日"
+    expect(Wareki::Date.new("寿永", 2, 3, 29).strftime("%JDK日")).to eq "晦日"
+    expect(Wareki::Date.new("寿永", 1, 2, 1).strftime("%JYK年%Jm月%JDK日")).to eq "寿永元年2月朔日"
+  end
 end
