@@ -191,7 +191,7 @@ module Wareki
       when :Yk; "#{format(:e)}#{format(:Gk)}"
       when :YK; "#{format(:e)}#{format(:GK)}"
       when :f; "#{format(:e)}#{format(:g)}年#{format(:s)}#{format(:l)}月#{format(:d)}日"
-      when :F; "#{format(:e)}#{format(:Gk)}年#{format(:Lk)}#{format(:Sk)}月#{format(:Dk)}日"
+      when :F; "#{format(:e)}#{format(:GK)}年#{format(:Lk)}#{format(:Sk)}月#{format(:Dk)}日"
       else
         nil
       end
