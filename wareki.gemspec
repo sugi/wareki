@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["sugi@nemui.org"]
 
   spec.summary       = %q{Pure ruby library of Wareki (Japanese calendar date)}
-  spec.description   = %q{Wareki supports string parsing, formatting, and bi-directional convertion with standard Date class.}
+  spec.description   = %q{Pure ruby library of Wareki (Japanese calendar date) that supports string parsing, formatting, and bi-directional convertion with standard Date class.}
   spec.homepage      = "https://github.com/sugi/wareki"
   spec.license       = "BSD"
 
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   #spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = "2.0.0"
+  spec.required_ruby_version = ">= 2.0.0"
   spec.add_development_dependency "bundler", "~> 1.9"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec"
