@@ -20,6 +20,13 @@
   * strftime に和暦フォーマット文字列を追加
   * Date::JAPAN (明治改暦日)の追加
 
+== 使い方
+
+ require 'wareki'
+
+ Date.today.strftime("%JF")              # => "平成二十七年八月二十二日"
+ Date.civil(1311, 7, 20).strftime("%JF") # => "応長元年閏六月四日"
+
 == フォーマット文字列
 
 * %Jf: "%Je%Jg年%Js%Jl月%Jd日" の略 (例: 平成23年3月12日)

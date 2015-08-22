@@ -136,10 +136,11 @@ module Wareki
       ::Date.jd(jd, start)
     end
 
-    def strftime(format = "%JF")
-      ret = format.to_str.gsub(/%J([fFyYegGoOiImMsSlLdD][kK]?)/) { format($1) || $& }
+    def strftime(format_str = "%JF")
+      ret = format_str.to_str.gsub(/%J([fFyYegGoOiImMsSlLdD][kK]?)/) { format($1) || $& }
       ret.index("%") or return ret
-      to_date.strftime(ret)
+      d = to_date
+      d.respond_to?(:_wareki_strftime_orig) ? d._wareki_strftime_orig(ret) : d.strftime(ret)
     end
 
     def format(key)
