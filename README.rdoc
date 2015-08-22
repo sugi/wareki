@@ -1,5 +1,3 @@
-= このライブラリはまだ作成中でリリースされていません！！
-
 = ruby 和暦ライブラリ
 
 == 概要
@@ -19,6 +17,16 @@
   * strftime に和暦フォーマット文字列を追加
   * to_wareki_date を追加
   * Date::JAPAN (明治改暦日)の追加
+
+== インストール
+
+Gemfile に以下のようにするか、
+
+ gem 'wareki'
+
+もしくは、直接 gem install して下さい。
+
+ gem install wareki
 
 == 使い方の例
 
