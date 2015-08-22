@@ -30,15 +30,16 @@ describe Wareki::Date do
   end
 
   it "can parse date string" do
-    u = Wareki::Date
-    expect(u.parse("平成27年１２月八日").to_date).to eq Date.new(2015, 12, 8)
-    expect(u.parse("安政 ７年 ３月 １７日").to_date).to eq Date.new(1860, 4, 7)
-    expect(u.parse("安政七年　\t 弥生卅日").to_date).to eq Date.new(1860, 4, 20)
-    expect(u.parse("安政七年 弥生").to_date).to eq u.parse("安政7年3月1日").to_date
-    expect(u.parse("元仁元年閏七月朔日").to_date).to eq Date.new(1224, 8, 17)
-    expect(u.parse("元仁元年 うるう ７月１日").to_date).to eq Date.new(1224, 8, 17)
-    expect(u.parse("元仁二年　元日").to_date).to eq Date.new(1225, 2, 9)
-    expect(u.parse("寿永三年 五月 晦日").to_date).to eq Date.new(1184, 7, 9)
+    d = Wareki::Date
+    expect(d.parse("平成27年１２月八日").to_date).to eq Date.new(2015, 12, 8)
+    expect(d.parse("安政 ７年 ３月 １７日").to_date).to eq Date.new(1860, 4, 7)
+    expect(d.parse("安政七年　\t 弥生卅日").to_date).to eq Date.new(1860, 4, 20)
+    expect(d.parse("安政七年 弥生").to_date).to eq d.parse("安政7年3月1日").to_date
+    expect(d.parse("元仁元年閏七月朔日").to_date).to eq Date.new(1224, 8, 17)
+    expect(d.parse("元仁元年 うるう ７月１日").to_date).to eq Date.new(1224, 8, 17)
+    expect(d.parse("元仁二年　元日").to_date).to eq Date.new(1225, 2, 9)
+    expect(d.parse("寿永三年 五月 晦日").to_date).to eq Date.new(1184, 7, 9)
+    expect(d.parse("慶應元年八月二十四日").to_date).to eq Date.new(1865, 10, 1, Date::JULIAN).new_start(Date::ITALY)
   end
 
   it "can be formatted in string" do

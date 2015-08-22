@@ -7,13 +7,13 @@ module Wareki
       str == "零" and return 0
       str.to_s.each_char do |c|
         case c
-        when *%w(元 朔 一 二 三 四 五 六 七 八 九 肆 1 2 3 4 5 6 7 8 9 １ ２ ３ ４ ５ ６ ７ ８ ９)
+        when *%w(正 元 朔 一 二 三 四 五 六 七 八 九 肆 1 2 3 4 5 6 7 8 9 １ ２ ３ ４ ５ ６ ７ ８ ９)
           if curnum
             curnum *= 10
           else
             curnum = 0
           end
-          curnum += c.tr("一二三四五六七八九１２３４５６７８９肆元朔", "123456789123456789411").to_i
+          curnum += c.tr("一二三四五六七八九１２３４５６７８９肆元朔正", "1234567891234567894111").to_i
         when "〇", "０", "0"
           curnum and curnum *= 10
         when "卄", "廿"
