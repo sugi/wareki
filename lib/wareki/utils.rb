@@ -53,10 +53,10 @@ module Wareki
         '万' => 10000,
         ''   => 1,
       }.each do |unit4, rank4|
-        i = (num / rank4).to_i % 10000
-        if i == 0
+        i4 = (num / rank4).to_i % 10000
+        if i4 == 0
           next
-        elsif i == 1
+        elsif i4 == 1
           ret += "一#{unit4}"
           next
         end
@@ -64,22 +64,24 @@ module Wareki
           '千' => 1000,
           '百' => 100,
           '十' => 10,
+          ''   => 1,
         }.each do |unit1, rank1|
-          i = (num / rank1).to_i % 10
-          if i == 0
+          i1 = (i4 / rank1).to_i % 10
+          if i1 == 0
             next
-          elsif i == 1
+          elsif i1 == 1 && unit1 != ""
             ret += unit1
           else
-            ret += i.to_s.tr('123456789', '一二三四五六七八九') + unit1
+            ret += i1.to_s.tr('123456789', '一二三四五六七八九') + unit1
           end
-        end
-        if (num % 10) != 0
-          ret += (num % 10).to_s.tr('123456789', '一二三四五六七八九')
         end
         ret += unit4
       end
       ret
+    end
+
+    def i_to_zen(num)
+      num.to_s.tr('0123456789', '０１２３４５６７８９')
     end
 
     def last_day_of_month(year, month, is_leap)

@@ -35,6 +35,16 @@ describe Wareki::Utils do
     expect(u.alt_month_name_to_i("水無月")).to eq 6
     expect(u.alt_month_name_to_i("ほげ")).to eq false
   end
+
+  it "can convert num to zenkaku" do
+    expect(u.i_to_zen(101239)).to eq "１０１２３９"
+  end
+
+  it "can convert num to kansuji" do
+    expect(u.i_to_kan(1234)).to eq "千二百三十四"
+    expect(u.i_to_kan(10003)).to eq "一万三"
+    expect(u.i_to_kan(200000000056)).to eq "二千億五十六"
+    expect(u.i_to_kan(9030000001008)).to eq "九兆三百億千八"
   end
 
 end
