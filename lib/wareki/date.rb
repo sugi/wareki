@@ -133,54 +133,63 @@ module Wareki
     end
 
     def strftime(format = "%JF")
-      fmt_pat = {
-        e: era_name,
-        g: era_name.to_s == "" ? '' : era_year,
-        G: era_name.to_s == "" ? '' : era_year.to_s.tr('0123456789', '０１２３４５６７８９'),
-        Gk: era_name.to_s == "" ? '' : Utils.i_to_kan(era_year),
-        GK: era_name.to_s == "" ? '' : Utils.i_to_kan(era_year),
-        o: year,
-        O: year.to_s.tr('0123456789', '０１２３４５６７８９'),
-        Ok: Utils.i_to_kan(year),
-        i: imperial_year,
-        I: imperial_year.to_s.tr('0123456789', '０１２３４５６７８９'),
-        Ik: Utils.i_to_kan(imperial_year),
-        s: month,
-        S: month.to_s.tr('0123456789', '０１２３４５６７８９'),
-        Sk: Utils.i_to_kan(month),
-        SK: ALT_MONTH_NAME[month-1],
-        l: leap_month? ? "'" : "",
-        L: leap_month? ? "’" : "",
-        Lk: leap_month? ? "閏" : "",
-        d: day,
-        D: day.to_s.tr('0123456789', '０１２３４５６７８９'),
-        Dk: Utils.i_to_kan(day),
-        DK: Utils.i_to_kan(day),
-      }
-      era_year == 1 and
-        fmt_pat[:GK] = "元"
-      if month == 1 && !leap_month? && day == 1
-        fmt_pat[:DK] = "元"
-      elsif day == 1
-        fmt_pat[:DK] = "朔"
-      elsif day == Utils.last_day_of_month(year, month, leap_month?)
-        fmt_pat[:DK] = "晦"
-      end
-
-      fmt_pat.update({
-        m: "#{fmt_pat[:s]}#{fmt_pat[:l]}",
-        M: "#{fmt_pat[:Lk]}#{fmt_pat[:S]}",
-        Mk: "#{fmt_pat[:Lk]}#{fmt_pat[:Sk]}",
-        y: "#{fmt_pat[:e]}#{fmt_pat[:g]}",
-        Y: "#{fmt_pat[:e]}#{fmt_pat[:G]}",
-        Yk: "#{fmt_pat[:e]}#{fmt_pat[:Gk]}",
-        YK: "#{fmt_pat[:e]}#{fmt_pat[:GK]}",
-        f: "#{fmt_pat[:e]}#{fmt_pat[:g]}年#{fmt_pat[:s]}#{fmt_pat[:l]}月#{fmt_pat[:d]}日",
-        F: "#{fmt_pat[:e]}#{fmt_pat[:Gk]}年#{fmt_pat[:Lk]}#{fmt_pat[:Sk]}月#{fmt_pat[:Dk]}日",
-      })
-      ret = format.to_str.gsub(/%J([fFyYegGoOiImMsSlLdD][kK]?)/) { fmt_pat[$1.to_sym] }
+      ret = format.to_str.gsub(/%J([fFyYegGoOiImMsSlLdD][kK]?)/) { format($1) || $& }
       ret.index("%") or return ret
       to_date.strftime(ret)
+    end
+
+    def format(key)
+      case key.to_sym
+      when :e; era_name
+      when :g; era_name.to_s == "" ? '' : era_year
+      when :G; era_name.to_s == "" ? '' : Utils.i_to_zen(era_year)
+      when :Gk; era_name.to_s == "" ? '' : Utils.i_to_kan(era_year)
+      when :GK
+        if era_name.to_s == ""
+          ''
+        elsif era_year == 1
+          "元"
+        else
+          Utils.i_to_kan(era_year)
+        end
+      when :o; year
+      when :O; Utils.i_to_zen(year)
+      when :Ok; Utils.i_to_kan(year)
+      when :i; imperial_year
+      when :I; Utils.i_to_zen(imperial_year)
+      when :Ik; Utils.i_to_kan(imperial_year)
+      when :s; month
+      when :S; Utils.i_to_zen(month)
+      when :Sk; Utils.i_to_kan(month)
+      when :SK; ALT_MONTH_NAME[month-1]
+      when :l; leap_month? ? "'" : ""
+      when :L; leap_month? ? "’" : ""
+      when :Lk; leap_month? ? "閏" : ""
+      when :d; day
+      when :D; Utils.i_to_zen(day)
+      when :Dk; Utils.i_to_kan(day)
+      when :DK
+        if month == 1 && !leap_month? && day == 1
+          "元"
+        elsif day == 1
+          "朔"
+        elsif day == Utils.last_day_of_month(year, month, leap_month?)
+          "晦"
+        else
+          Utils.i_to_kan(day)
+        end
+      when :m; "#{format(:s)}#{format(:l)}"
+      when :M; "#{format(:Lk)}#{format(:S)}"
+      when :Mk; "#{format(:Lk)}#{format(:Sk)}"
+      when :y; "#{format(:e)}#{format(:g)}"
+      when :Y; "#{format(:e)}#{format(:G)}"
+      when :Yk; "#{format(:e)}#{format(:Gk)}"
+      when :YK; "#{format(:e)}#{format(:GK)}"
+      when :f; "#{format(:e)}#{format(:g)}年#{format(:s)}#{format(:l)}月#{format(:d)}日"
+      when :F; "#{format(:e)}#{format(:Gk)}年#{format(:Lk)}#{format(:Sk)}月#{format(:Dk)}日"
+      else
+        nil
+      end
     end
   end
 end
