@@ -27,6 +27,9 @@ module Wareki
         month = Utils.alt_month_name_to_i(match[:alt_month])
       end
 
+      month > 12 || month < 0 and
+        raise ArgumentError, "Invalid month: #{str}"
+
       if match[:day]
         if match[:day] == "晦"
           day = Utils.last_day_of_month(ERA_BY_NAME[era].year + year -1, month, match[:is_leap])
@@ -36,8 +39,9 @@ module Wareki
       end
 
       if (era == "明治" && year == 5 ||
-          era.to_s == "" && year == 1872 ||
-          era == "皇紀" && year == 2532) &&
+          era.to_s == "" && year == GREGORIAN_START_YEAR - 1 ||
+          (era == "皇紀" || era == "神武天皇即位紀元") &&
+          year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) &&
           month == 12 && day > 2
         raise ArgumentError, "Invaild Date: #{str}"
       end
