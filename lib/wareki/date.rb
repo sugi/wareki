@@ -1,5 +1,6 @@
 # coding: utf-8
 require 'wareki/common'
+require 'wareki/utils'
 module Wareki
 
   class Date
