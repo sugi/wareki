@@ -116,14 +116,6 @@ module Wareki
       ALT_MONTH_NAME[month - 1]
     end
 
-    def parse(str, start = ::Date::ITALY)
-      begin
-        Date.parse(str).to_date(start)
-      rescue ArgumentError => e
-        ::Date.parse(str)
-      end
-    end
-
     def _to_date(d)
       if d.kind_of? ::Date
         d # nothing to do

@@ -1,4 +1,5 @@
 # coding: utf-8
+require 'date'
 require 'wareki/common'
 require 'wareki/utils'
 module Wareki
@@ -7,7 +8,7 @@ module Wareki
     attr_reader :jd
     attr_accessor :year, :month, :day, :era_year, :era_name
 
-    def self.parse(str)
+    def self._parse(str)
       match = REGEX.match(str.to_s.gsub(/[[:space:]]/, ''))
       if !match || !match[:year]
         raise ArgumentError, "Invaild Date: #{str}"
@@ -46,7 +47,12 @@ module Wareki
         raise ArgumentError, "Invaild Date: #{str}"
       end
 
-      new(era, year, month, day, !!match[:is_leap])
+      {era: era, year: year, month: month, day: day, is_leap: !!match[:is_leap]}
+    end
+
+    def self.parse(str)
+      di = _parse(str)
+      new(di[:era], di[:year], di[:month], di[:day], di[:is_leap])
     end
 
     def self.jd(d)

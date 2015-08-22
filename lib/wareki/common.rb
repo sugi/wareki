@@ -24,4 +24,13 @@ module Wareki
   }x
 
   class UnsupportedDateRange < StandardError; end
+
+  module_function
+  def parse_to_date(str, start = ::Date::ITALY)
+    begin
+      Date.parse(str).to_date(start)
+    rescue ArgumentError => e
+      ::Date.parse(str, true, start)
+    end
+  end
 end
