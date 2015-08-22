@@ -33,6 +33,8 @@ describe Wareki::Utils do
     expect(u.alt_month_name_to_i("弥生")).to eq 3
     expect(u.alt_month_name_to_i("師走")).to eq 12
     expect(u.alt_month_name_to_i("水無月")).to eq 6
+    expect(u.alt_month_name_to_i("ほげ")).to eq false
+  end
   end
 
 end

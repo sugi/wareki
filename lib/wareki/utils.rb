@@ -106,7 +106,8 @@ module Wareki
     end
 
     def alt_month_name_to_i(name)
-      ALT_MONTH_NAME.index(name) + 1
+      i = ALT_MONTH_NAME.index(name) or return false
+      i + 1
     end
 
     def alt_month_name(month)
