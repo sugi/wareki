@@ -49,6 +49,7 @@ describe Wareki::Date do
     expect(d.strftime("皇紀で%Ji年%Jm月%Jd日")).to eq "皇紀で2343年5'月4日"
     expect(d.strftime("%JYk年　%JSK")).to eq "天和三年　皐月"
     expect(d.strftime("西暦だと%Y年%m月%d日")).to eq "西暦だと1683年06月28日"
+    expect(d.strftime("未定義なやつはそのまま %JeK")).to eq "未定義なやつはそのまま %JeK"
     expect(Wareki::Date.parse("寿永三年 五月 晦日").strftime("%Jd日")).to eq "30日"
     expect(Wareki::Date.parse("寿永2年 3月 晦日").strftime("%Jd日")).to eq "29日"
     expect(Wareki::Date.new("寿永", 2, 3, 29).strftime("%JDK日")).to eq "晦日"
