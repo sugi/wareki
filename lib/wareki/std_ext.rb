@@ -1,7 +1,7 @@
 require 'date'
 require 'wareki/date'
 module Wareki
-  module CoreExt
+  module StdExt
   end
 end
 class Date

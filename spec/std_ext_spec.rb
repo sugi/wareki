@@ -1,4 +1,4 @@
-describe Wareki::CoreExt do
+describe Wareki::StdExt do
   it "overrides strftime" do
     d = Date.new(2015, 8, 1)
     expect(d.strftime).to eq "2015-08-01"

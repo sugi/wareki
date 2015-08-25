@@ -1,2 +1,2 @@
 require 'wareki/date'
-require 'wareki/core_ext'
+require 'wareki/std_ext'
