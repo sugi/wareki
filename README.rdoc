@@ -1,5 +1,8 @@
 = ruby 和暦ライブラリ
 
+{<img src="https://travis-ci.org/sugi/wareki.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/sugi/wareki]
+{<img src="https://coveralls.io/repos/sugi/wareki/badge.svg?branch=master&service=github" alt="Coverage Status" />}[https://coveralls.io/github/sugi/wareki?branch=master]
+
 == 概要
 
 日本の和暦をサポートするライブラリです。
