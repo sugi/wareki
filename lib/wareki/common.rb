@@ -7,7 +7,11 @@ module Wareki
   GREGORIAN_START_YEAR = 1873
   IMPERIAL_START = 1480041  # Date.new(-660, 2, 11, Date::GREGORIAN).jd
   IMPERIAL_START_YEAR = -660
-  DATE_INFINITY = ::Date.new(2**(0.size * 8 -2) -1, 12, 31) # Use max Fixnum as year.
+  if defined? JRUBY_VERSION
+    DATE_INFINITY = ::Date.new(java.lang.Integer::MAX_VALUE, 12, 31) # Use max Integer for jruby.
+  else
+    DATE_INFINITY = ::Date.new(2**(0.size * 8 -2) -1, 12, 31) # Use max Fixnum as year.
+  end
   YEAR_BY_NUM = Hash[*YEAR_DEFS.map{|y| [y.year, y]}.flatten].freeze
   ERA_BY_NAME = Hash[*(ERA_NORTH_DEFS + ERA_DEFS).map {|g| [g.name, g]}.flatten]
   ERA_BY_NAME['皇紀'] = ERA_BY_NAME['神武天皇即位紀元'] = Era.new('皇紀', -660, 1480041, DATE_INFINITY.jd)
