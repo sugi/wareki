@@ -99,6 +99,14 @@ Gemfile に以下のようにするか、
 * 旧暦: {suikawiki - 旧暦}[http://wiki.suikawiki.org/n/%E6%97%A7%E6%9A%A6#section-%E5%AF%BE%E7%85%A7%E8%A1%A8%E3%81%A8%E5%A4%89%E6%8F%9B%E3%83%84%E3%83%BC%E3%83%AB] にある「日本暦日原典」第4版準拠の先発グレゴリオ暦対照表
 * 元号: {Wikipedia - 元号一覧_(日本)}[https://ja.wikipedia.org/wiki/%E5%85%83%E5%8F%B7%E4%B8%80%E8%A6%A7_%28%E6%97%A5%E6%9C%AC%29] のユリウス歴とグレゴリオ暦表記の物を利用しています
 
+== ライセンス
+
+{The BSD 2-Clause License}[https://opensource.org/licenses/BSD-2-Clause]
+
+== 作者
+
+Tatsuki Sugiura <sugi@nemui.org>
+
 == TODO
 * 北朝モード
 * Wareki::Date で各種計算のサポート
