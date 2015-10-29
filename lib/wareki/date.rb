@@ -172,7 +172,7 @@ module Wareki
       when :s; month
       when :S; Utils.i_to_zen(month)
       when :Sk; Utils.i_to_kan(month)
-      when :SK; ALT_MONTH_NAME[month-1]
+      when :SK; Utils.alt_month_name(month)
       when :l; leap_month? ? "'" : ""
       when :L; leap_month? ? "’" : ""
       when :Lk; leap_month? ? "閏" : ""
