@@ -21,6 +21,7 @@ describe Wareki::Utils do
 
   it "converts kansuji to integer" do
     expect(u.kan_to_i("千二百三十四")).to eq 1234
+    expect(u.kan_to_i("百卄")).to eq 120
     expect(u.kan_to_i("一二三四")).to eq 1234
     expect(u.kan_to_i("千皕卅肆")).to eq 1234
     expect(u.kan_to_i("一〇〇〇五")).to eq 10005
@@ -28,6 +29,8 @@ describe Wareki::Utils do
     expect(u.kan_to_i("零")).to eq 0
     expect(u.kan_to_i("元")).to eq 1
     expect(u.kan_to_i("五万廿")).to eq 50020
+    expect(u.kan_to_i("百七十八万二")).to eq 1780002
+    expect(u.kan_to_i("九億６千万卌一")).to eq 960000041
   end
 
   it "can convert altanative month name to integer" do

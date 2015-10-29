@@ -3,7 +3,8 @@ module Wareki
   module Utils
     module_function
     def kan_to_i(str)
-      ret = 0
+      ret3 = 0
+      ret4 = 0
       curnum = nil
       str == "零" and return 0
       str.to_s.each_char do |c|
@@ -18,31 +19,36 @@ module Wareki
         when "〇", "０", "0"
           curnum and curnum *= 10
         when "卄", "廿"
-          ret += 20
+          ret3 += 20
           curnum = nil
         when "卅", "丗"
-          ret += 30
+          ret3 += 30
           curnum = nil
         when "卌"
-          ret += 40
+          ret3 += 40
           curnum = nil
         when "皕"
-          ret += 200
+          ret3 += 200
           curnum = nil
-        when "十", "百", "千", "万", "億", "兆"
+        when "万", "億", "兆", "京", "垓"
           if curnum
-            ret += curnum * 10 ** (["十", "百", "千", "万", "億", "兆"].index(c)+1)
-          else
-            ret += 10 ** (["十", "百", "千", "万", "億", "兆"].index(c)+1)
+            ret3 += curnum
+            curnum = nil
           end
+          ret3 = 1 if ret3 == 0
+          ret4 += ret3 * 10 ** ((["万", "億", "兆", "京", "垓"].index(c)+1)*4)
+          ret3 = 0
+        when "十", "百", "千"
+          curnum ||= 1
+          ret3 += curnum * 10 ** (["十", "百", "千"].index(c)+1)
           curnum = nil
         end
       end
       if curnum
-        ret += curnum
+        ret3 += curnum
         curnum = nil
       end
-      ret
+      ret4 + ret3
     end
 
     def i_to_kan(num, opts = {})
