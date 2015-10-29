@@ -1,3 +1,4 @@
+# coding: utf-8
 describe Wareki::StdExt do
   it "overrides strftime" do
     d = Date.new(2015, 8, 1)

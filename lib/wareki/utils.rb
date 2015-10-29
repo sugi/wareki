@@ -1,3 +1,4 @@
+# coding: utf-8
 module Wareki
   module Utils
     module_function

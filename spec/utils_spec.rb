@@ -1,3 +1,4 @@
+# coding: utf-8
 describe Wareki::Utils do
   u = Wareki::Utils
 
