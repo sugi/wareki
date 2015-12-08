@@ -1,5 +1,6 @@
 = ruby 和暦ライブラリ
 
+{<img src="https://badge.fury.io/rb/wareki.svg" alt="Gem Version" />}[https://badge.fury.io/rb/wareki]
 {<img src="https://travis-ci.org/sugi/wareki.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/sugi/wareki]
 {<img src="https://coveralls.io/repos/sugi/wareki/badge.svg?branch=master&service=github" alt="Coverage Status" />}[https://coveralls.io/github/sugi/wareki?branch=master]
 
