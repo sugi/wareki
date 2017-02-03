@@ -15,7 +15,7 @@ describe Wareki::Utils do
   it "returns nil on missing era" do
     e = u.find_era(Date.new(655, 12, 10))
     expect(e).to be_nil
-    e = u.find_era(Date.new(686, 10, 1))
+    e = u.find_era(Date.new(686, 10, 2))
     expect(e).to be_nil
   end
 
@@ -51,4 +51,22 @@ describe Wareki::Utils do
     expect(u.i_to_kan(9030000001008)).to eq "九兆三百億千八"
   end
 
+  it "can find era by start and end day" do
+    expect(u.find_era(2447534).name).to eq "昭和"
+    expect(u.find_era(2424875).name).to eq "昭和"
+    expect(u.find_era(2403357).name).to eq "明治"
+    expect(u.find_era(2419613).name).to eq "明治"
+  end
+
+  it "returns new era on overlap day" do
+    expect(u.find_era(1958551).name).to eq "白雉"
+    expect(u.find_era(2256978).name).to eq "応仁"
+  end
+
+  it "can find year with first and last day" do
+    expect(u.find_year(2275903).year).to eq 1519
+    expect(u.find_year(2276257).year).to eq 1519
+    expect(u.find_year(2293061).year).to eq 1566
+    expect(u.find_year(2293443).year).to eq 1566
+  end
 end

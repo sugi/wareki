@@ -76,4 +76,14 @@ describe Wareki::Date do
     expect(Wareki::Date.new("寿永", 1, 2, 1).strftime("%JYK年%Jm月%JDK日")).to eq "寿永元年2月朔日"
     expect(Wareki::Date.new("寿永", 1, 1, 1).strftime("%JYK年%JM%JL月%JDK日")).to eq "寿永元年１月元日"
   end
+
+  it "can handle last days of era" do
+    expect(Date.parse("1989/1/7").strftime('%JF')).to eq "昭和六十四年一月七日"
+    expect(Date.parse("1912/7/29").strftime('%JF')).to eq "明治四十五年七月二十九日"
+    expect(Date.parse("1926/12/24").strftime('%JF')).to eq "大正十五年十二月二十四日"
+  end
+
+  it "can handle last days of year" do
+    expect(Date.parse("1868/1/24").strftime('%JF')).to eq "慶応三年十二月三十日"
+  end
 end
