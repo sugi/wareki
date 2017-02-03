@@ -1,0 +1,21 @@
+2017-02-04  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version 0.1.3
+	* Fix last day of era/year handling issue (#2)
+	* Fix kansuji converter for large numbers
+	  (This is NOT affected with ordinal date numbers)
+
+2015-09-03  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version 0.1.2
+	* Fix file permissions (#1)
+
+2015-08-23  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version 0.1.1
+	* Fix gemspec: dependency of ruby version
+
+2015-08-23  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version 0.1.0.
+	* First release
