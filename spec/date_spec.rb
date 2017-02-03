@@ -57,6 +57,14 @@ describe Wareki::Date do
     expect(d.parse("慶應元年八月二十四日").to_date).to eq Date.new(1865, 10, 1, Date::JULIAN).new_start(Date::ITALY)
   end
 
+  it "can parse with white space" do
+    d = Date
+    exd = Date.new(1928, 3, 11)
+    expect(d.parse(" 1928-3-11  ").to_date).to eq exd
+    expect(d.parse("　1928 年 3 月　１１ 日  ").to_date).to eq exd
+    expect(d.parse("\t\n　1 9 2 8 年 3 月　１１ 日  ").to_date).to eq exd
+  end
+
   it "can be formatted in string" do
     d = Wareki::Date.new("天和", 3, 5, 4, true)
     expect(d.strftime).to eq "天和三年閏五月四日"
