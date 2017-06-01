@@ -1,3 +1,8 @@
+2017-06-01  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version: 0.1.4
+	* Add ad-hoc support for 西暦 and 紀元前
+
 2017-02-04  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version 0.1.3

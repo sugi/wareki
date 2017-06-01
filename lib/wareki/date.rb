@@ -18,7 +18,7 @@ module Wareki
       month = 1
       day = 1
 
-      if era.to_s != "" && !ERA_BY_NAME[era]
+      if era.to_s != "" && era.to_s != "紀元前" && !ERA_BY_NAME[era]
         raise ArgumentError, "Date parse failed: Invalid era name '#{match[:era_name]}'"
       end
 
@@ -73,7 +73,7 @@ module Wareki
     end
 
     def initialize(era_name, era_year, month = 1, day = 1, is_leap_month = false)
-      if era_name.to_s != "" && era_name != "西暦" && !ERA_BY_NAME[era_name]
+      if era_name.to_s != "" && era_name != "紀元前" && !ERA_BY_NAME[era_name]
         raise ArgumentError, "Undefined era '#{era_name}'"
       end
       @month = month
@@ -81,10 +81,12 @@ module Wareki
       @is_leap_month = is_leap_month
       @era_name = era_name
       @era_year = era_year
-      if era_name.to_s == ""
+      if era_name.to_s == "" || era_name == "西暦"
         @year = @era_year
       elsif era_name == "皇紀" || era_name == "神武天皇即位紀元"
         @year = era_year + IMPERIAL_START_YEAR
+      elsif era_name.to_s == "紀元前"
+        @year = -@era_year
       else
         @year = ERA_BY_NAME[era_name].year + era_year - 1
       end
@@ -111,7 +113,7 @@ module Wareki
     end
 
     def month_index
-      if @era_name == "西暦" || @year >= GREGORIAN_START_YEAR
+      if @era_name == "" || @era_name == "西暦" || @era_name == "紀元前" || @year >= GREGORIAN_START_YEAR
         return month -1
       end
 
@@ -127,7 +129,7 @@ module Wareki
     def jd
       @jd and return @jd
 
-      if @era_name == "西暦"
+      if @era_name == "西暦" || @era_name == "" || @era_name == "紀元前"
         return @jd = ::Date.new(@year, month, day, ::Date::ITALY).jd
       elsif @year >= GREGORIAN_START_YEAR
         return @jd = ::Date.new(@year, month, day, ::Date::GREGORIAN).jd

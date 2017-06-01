@@ -55,6 +55,16 @@ describe Wareki::Date do
     expect(d.parse("元仁二年　元日").to_date).to eq Date.new(1225, 2, 9)
     expect(d.parse("寿永三年 五月 晦日").to_date).to eq Date.new(1184, 7, 9)
     expect(d.parse("慶應元年八月二十四日").to_date).to eq Date.new(1865, 10, 1, Date::JULIAN).new_start(Date::ITALY)
+
+    expect(d.parse("10年5月3日").to_date).to eq Date.new(10, 5, 3)
+    expect(d.parse("321年").to_date).to eq Date.new(321, 1, 1)
+    expect(d.parse("2年12月31日").to_date).to eq Date.new(2, 12, 31)
+    expect(d.parse("西暦10年5月3日").to_date).to eq Date.new(10, 5, 3)
+    expect(d.parse("西暦321年").to_date).to eq Date.new(321, 1, 1)
+    expect(d.parse("西暦2年12月31日").to_date).to eq Date.new(2, 12, 31)
+    expect(d.parse("紀元前203年12月31日").to_date).to eq Date.new(-203, 12, 31)
+    expect(d.parse("紀元前4年7月").to_date).to eq Date.new(-4, 7, 1)
+    expect(d.parse("紀元前9876年4月2日").to_date).to eq Date.new(-9876, 4, 2)
   end
 
   it "can parse with white space" do
