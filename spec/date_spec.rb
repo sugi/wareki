@@ -48,7 +48,7 @@ describe Wareki::Date do
 
   it "can be compared with other instance" do
     d = Date.today
-    wd = Wareki::Date.jd(d.jd)
+    wd = Wareki::Date.today
     expect(Wareki::Date.jd(d.jd) === wd).to be true
     expect(Wareki::Date.jd(d.jd) === d).to be true
     expect(Wareki::Date.jd(d.jd)).to eq wd
@@ -75,6 +75,36 @@ describe Wareki::Date do
       w = Wareki::Date.new(*wareki)
       expect(w.jd).to eq d.jd
     end
+  end
+
+  it "can be calclated with number" do
+    w = Wareki::Date.parse("平成7年11月10日")
+    expect((w + 1).strftime("%Jf")).to eq "平成7年11月11日"
+    expect((w - 1).strftime("%Jf")).to eq "平成7年11月9日"
+    expect((w - 10).strftime("%Jf")).to eq "平成7年10月31日"
+    expect((w + 21).strftime("%Jf")).to eq "平成7年12月1日"
+
+    w = Wareki::Date.today
+    expect(w + 1 === Date.today + 1).to eq true
+    expect(w - 1 === Date.today - 1).to eq true
+    expect(w - 94 === Date.today - 94).to eq true
+    expect(w + 94 === Date.today + 94).to eq true
+    expect(w + 94 === Date.today + 95).to eq false
+    expect(w + 95 === Date.today + 94).to eq false
+  end
+
+  it "can not be calculated with ActiveSupport::Duration" do
+    unless defined?(ActiveSupport::Duration)
+      module ActiveSupport; class Duration;
+        def self.days(v); new; end
+      end; end; # Dummy...
+    end
+    expect {
+      Wareki::Date.today + ActiveSupport::Duration.days(3)
+    }.to raise_error(NotImplementedError)
+    expect {
+      Wareki::Date.today - ActiveSupport::Duration.days(3)
+    }.to raise_error(NotImplementedError)
   end
 
   it "can parse date string" do

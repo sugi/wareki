@@ -222,6 +222,7 @@ module Wareki
       end
       true
     end
+    alias_method :==, :eql?
 
     def ===(other)
       begin
@@ -232,6 +233,24 @@ module Wareki
       true
     end
 
-    alias_method :==, :eql?
+    def -(other)
+      if other.class.to_s == "ActiveSupport::Duration"
+        raise NotImplementedError, "Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric."
+      else
+        other.respond_to?(:to_date) and other = other.to_date
+        other.respond_to?(:jd) and other = other.jd
+        self.class.jd jd - other
+      end
+    end
+
+    def +(other)
+      if other.class.to_s == "ActiveSupport::Duration"
+        raise NotImplementedError, "Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric."
+      else
+        other.respond_to?(:to_date) and other = other.to_date
+        other.respond_to?(:jd) and other = other.jd
+        self.class.jd jd + other
+      end
+    end
   end
 end
