@@ -101,7 +101,7 @@ module Wareki
         else
           tmp_m += 1
         end
-        day = (::Date.new(tmp_y, tmp_m, 1, Date::GREGORIAN)-1).day
+        day = (::Date.new(tmp_y, tmp_m, 1, ::Date::GREGORIAN)-1).day
       else
         yobj = YEAR_BY_NUM[year] or
           raise UnsupportedDateRange, "Cannot find year #{self.inspect}"
