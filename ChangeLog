@@ -1,3 +1,10 @@
+2017-07-25  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version: 0.2.0
+	* Support date calculation (limited with Number)
+	* Add compare methods
+	* Fix error with "晦日" after Date::GREGORIAN
+
 2017-06-01  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version: 0.1.4
