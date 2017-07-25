@@ -7,6 +7,10 @@ module Wareki
     attr_reader :jd
     attr_accessor :year, :month, :day, :era_year, :era_name
 
+    def self.today
+      jd(::Date.today.jd)
+    end
+
     def self._parse(str)
       match = REGEX.match(str.to_s.gsub(/[[:space:]]/, ''))
       if !match || !match[:year]
@@ -141,6 +145,10 @@ module Wareki
 
     def to_date(start = ::Date::ITALY)
       ::Date.jd(jd, start)
+    end
+
+    def to_time
+      to_date.to_time
     end
 
     def strftime(format_str = "%JF")
