@@ -67,6 +67,10 @@ describe Wareki::Date do
     expect(d.parse("紀元前203年12月31日").to_date).to eq Date.new(-203, 12, 31)
     expect(d.parse("紀元前4年7月").to_date).to eq Date.new(-4, 7, 1)
     expect(d.parse("紀元前9876年4月2日").to_date).to eq Date.new(-9876, 4, 2)
+
+    expect {
+      d.parse("謎元号100年2月3日")
+    }.to raise_error(ArgumentError)
   end
 
   it "can parse with white space" do
@@ -84,12 +88,14 @@ describe Wareki::Date do
     expect(d.strftime("%Jf")).to eq "天和3年5'月4日"
     expect(d.strftime("%Jo %JO %JOk")).to eq "1683 １６８３ 千六百八十三"
     expect(d.strftime("%Ji %JI %JIk")).to eq "2343 ２３４３ 二千三百四十三"
+    expect(d.strftime("%Jd %JD %JDk")).to eq "4 ４ 四"
     expect(d.strftime("%Jm %JM %JMk")).to eq "5' 閏５ 閏五"
     expect(d.strftime("%Jy %JY %JYk")).to eq "天和3 天和３ 天和三"
     expect(d.strftime("皇紀で%Ji年%Jm月%Jd日")).to eq "皇紀で2343年5'月4日"
     expect(d.strftime("%JYk年　%JSK")).to eq "天和三年　皐月"
     expect(d.strftime("西暦だと%Y年%m月%d日")).to eq "西暦だと1683年06月28日"
     expect(d.strftime("未定義なやつはそのまま %JeK")).to eq "未定義なやつはそのまま %JeK"
+    expect(d.strftime("特殊表記が無ければ普通に漢字: %Je%JGK年%JSK%JDK日")).to eq "特殊表記が無ければ普通に漢字: 天和三年皐月四日"
     expect(Wareki::Date.parse("寿永三年 五月 晦日").strftime("%Jd日")).to eq "30日"
     expect(Wareki::Date.parse("寿永2年 3月 晦日").strftime("%Jd日")).to eq "29日"
     expect(Wareki::Date.new("寿永", 2, 3, 29).strftime("%JDK日")).to eq "晦日"
