@@ -3,7 +3,6 @@ require 'date'
 require 'wareki/common'
 require 'wareki/utils'
 module Wareki
-
   class Date
     attr_reader :jd
     attr_accessor :year, :month, :day, :era_year, :era_name
@@ -204,5 +203,27 @@ module Wareki
         nil
       end
     end
+
+    def eql?(other)
+      begin
+        [:year, :month, :day, :era_year, :era_name, :leap_month?].each do |attr|
+          other.public_send(attr) == public_send(attr) or return false
+        end
+      rescue => e
+        return false
+      end
+      true
+    end
+
+    def ===(other)
+      begin
+        other.jd == jd or return false
+      rescue => e
+        return false
+      end
+      true
+    end
+
+    alias_method :==, :eql?
   end
 end

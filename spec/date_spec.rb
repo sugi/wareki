@@ -34,6 +34,41 @@ describe Wareki::Date do
     end
   end
 
+  it "will be created by date instance" do
+    matchings.each do |civil, wareki|
+      d = Date.civil(*civil)
+      w = Wareki::Date.date(d)
+      expect(w.era_name).to eq wareki[0]
+      expect(w.era_year).to eq wareki[1]
+      expect(w.month).to eq wareki[2]
+      expect(w.day).to eq wareki[3]
+      expect(w.leap_month?).to eq wareki[4]
+    end
+  end
+
+  it "can be compared with other instance" do
+    d = Date.today
+    wd = Wareki::Date.jd(d.jd)
+    expect(Wareki::Date.jd(d.jd) === wd).to be true
+    expect(Wareki::Date.jd(d.jd) === d).to be true
+    expect(Wareki::Date.jd(d.jd)).to eq wd
+    expect(Wareki::Date.jd(d.jd)).not_to eq d
+    expect(Wareki::Date.jd(d.jd)).to eql wd
+    expect(Wareki::Date.jd(d.jd)).not_to eql d
+
+    d2 = Date.today - 1
+    expect(Wareki::Date.jd(d2.jd) === wd).to be false
+    expect(Wareki::Date.jd(d2.jd) === d).to be false
+    expect(Wareki::Date.jd(d2.jd)).not_to eq wd
+    expect(Wareki::Date.jd(d2.jd)).not_to eq d
+    expect(Wareki::Date.jd(d2.jd)).not_to eql wd
+    expect(Wareki::Date.jd(d2.jd)).not_to eql d
+
+    expect(Wareki::Date.jd(d2.jd) === 1).to be false
+    expect(Wareki::Date.jd(d2.jd)).not_to eq 1
+    expect(Wareki::Date.jd(d2.jd)).not_to eql 1
+  end
+
   it "can be converted to julian day number" do
     matchings.each do |civil, wareki|
       d = Date.civil(*civil)
