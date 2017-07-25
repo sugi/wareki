@@ -10,4 +10,8 @@ describe Wareki::StdExt do
     expect(Date.parse("平成 二十七年 八月 朔日")).to eq Date.new(2015, 8, 1)
     expect(Date.parse("2015-08-01")).to eq Date.new(2015, 8, 1)
   end
+
+  it "have Date::JAPAN" do
+    expect(Date::JAPAN).to eq Wareki::GREGORIAN_START
+  end
 end
