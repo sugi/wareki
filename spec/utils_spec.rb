@@ -47,8 +47,10 @@ describe Wareki::Utils do
   it "can convert num to kansuji" do
     expect(u.i_to_kan(1234)).to eq "千二百三十四"
     expect(u.i_to_kan(10003)).to eq "一万三"
-    expect(u.i_to_kan(200000000056)).to eq "二千億五十六"
-    expect(u.i_to_kan(9030000001008)).to eq "九兆三百億千八"
+    expect(u.i_to_kan(10_010_003)).to eq "千一万三"
+    expect(u.i_to_kan(100_000_003)).to eq "一億三"
+    expect(u.i_to_kan(200_000_000_056)).to eq "二千億五十六"
+    expect(u.i_to_kan(9_030_000_001_008)).to eq "九兆三百億千八"
   end
 
   it "can find era by start and end day" do

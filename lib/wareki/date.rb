@@ -23,11 +23,11 @@ module Wareki
     end
 
     def self._parse(str)
-      match = REGEX.match(str.to_s.gsub(/[[:space:]]/, ''))
-      !match || !match[:year] and
+      match = REGEX.match(str.to_s.gsub(/[[:space:]]/, '')) or 
         raise ArgumentError, "Invaild Date: #{str}"
       era = match[:era_name]
-      year = Utils.kan_to_i(match[:year])
+      (year = Utils.kan_to_i(match[:year])) > 0 or
+        raise ArgumentError, "Invalid year: #{str}"
       month = day = 1
 
       era.to_s != "" && era.to_s != "紀元前" && !ERA_BY_NAME[era] and
@@ -39,7 +39,7 @@ module Wareki
         month = Utils.alt_month_name_to_i(match[:alt_month])
       end
 
-      month > 12 || month < 0 and
+      month > 12 || month < 1 and
         raise ArgumentError, "Invalid month: #{str}"
 
       if match[:day]

@@ -133,9 +133,12 @@ describe Wareki::Date do
     expect(d.parse("紀元前4年7月").to_date).to eq Date.new(-4, 7, 1)
     expect(d.parse("紀元前9876年4月2日").to_date).to eq Date.new(-9876, 4, 2)
 
-    expect {
-      d.parse("謎元号100年2月3日")
-    }.to raise_error(ArgumentError)
+    expect { d.parse("謎元号100年2月3日") }.to raise_error(ArgumentError)
+    expect { d.parse("昭和2月3日") }.to raise_error(ArgumentError)
+    expect { d.parse("昭和0年2月3日") }.to raise_error(ArgumentError)
+    expect { d.parse("平成12年30月3日") }.to raise_error(ArgumentError)
+    expect { d.parse("平成12年0月3日") }.to raise_error(ArgumentError)
+    expect { d.parse("明治5年12月12日") }.to raise_error(ArgumentError)
   end
 
   it "can parse with white space" do
