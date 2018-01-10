@@ -11,6 +11,17 @@ module Wareki
       jd(::Date.today.jd)
     end
 
+    def self._check_invalid_date(era, year, month, day)
+      month == 12 or return true
+      day > 2 or return true
+      (era == "明治" && year == 5 ||
+       era.to_s == "" && year == GREGORIAN_START_YEAR - 1 ||
+       %w(皇紀 神武天皇即位紀元).member?(era) &&
+       year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) or
+        return true
+      false
+    end
+
     def self._parse(str)
       match = REGEX.match(str.to_s.gsub(/[[:space:]]/, ''))
       !match || !match[:year] and
@@ -40,13 +51,8 @@ module Wareki
         end
       end
 
-      if (era == "明治" && year == 5 ||
-          era.to_s == "" && year == GREGORIAN_START_YEAR - 1 ||
-          %w(皇紀 神武天皇即位紀元).member?(era) &&
-          year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) &&
-          month == 12 && day > 2
+      _check_invalid_date(era, year, month, day) or
         raise ArgumentError, "Invaild Date: #{str}"
-      end
 
       {era: era, year: year, month: month, day: day, is_leap: !!match[:is_leap]}
     end
