@@ -1,6 +1,19 @@
 # coding: utf-8
 module Wareki
   module Utils
+    UNIT_SUFFIX1 = {
+      '千' => 1000,
+      '百' => 100,
+      '十' => 10,
+      ''   => 1,
+    }
+    UNIT_SUFFIX2 = {
+      '京' => 10000000000000000,
+      '兆' => 1000000000000,
+      '億' => 100000000,
+      '万' => 10000,
+      ''   => 1,
+    }
     module_function
     def kan_to_i(str)
       ret3 = 0
@@ -53,13 +66,7 @@ module Wareki
 
     def i_to_kan(num, opts = {})
       ret = ''
-      {
-        '京' => 10000000000000000,
-        '兆' => 1000000000000,
-        '億' => 100000000,
-        '万' => 10000,
-        ''   => 1,
-      }.each do |unit4, rank4|
+      UNIT_SUFFIX2.each do |unit4, rank4|
         i4 = (num / rank4).to_i % 10000
         if i4 == 0
           next
@@ -67,12 +74,7 @@ module Wareki
           ret += "一#{unit4}"
           next
         end
-        {
-          '千' => 1000,
-          '百' => 100,
-          '十' => 10,
-          ''   => 1,
-        }.each do |unit1, rank1|
+        UNIT_SUFFIX1.each do |unit1, rank1|
           i1 = (i4 / rank1).to_i % 10
           if i1 == 0
             next
@@ -93,25 +95,32 @@ module Wareki
 
     def last_day_of_month(year, month, is_leap)
       if year >= GREGORIAN_START_YEAR
-        tmp_y = year
-        tmp_m = month
-        if month == 12
-          tmp_y += 1
-          tmp_m = 1
-        else
-          tmp_m += 1
-        end
-        day = (::Date.new(tmp_y, tmp_m, 1, ::Date::GREGORIAN)-1).day
+        _last_day_of_month_gregorian(year, month, is_leap)
       else
-        yobj = YEAR_BY_NUM[year] or
-          raise UnsupportedDateRange, "Cannot find year #{self.inspect}"
-        month_idx = month - 1
-        if is_leap || yobj.leap_month && yobj.leap_month < month
-          month_idx += 1
-        end
-        day = yobj.month_days[month_idx]
+        _last_day_of_month_from_defs(year, month, is_leap)
       end
-      day
+    end
+
+    def _last_day_of_month_gregorian(year, month, is_leap)
+      tmp_y = year
+      tmp_m = month
+      if month == 12
+        tmp_y += 1
+        tmp_m = 1
+      else
+        tmp_m += 1
+      end
+      (::Date.new(tmp_y, tmp_m, 1, ::Date::GREGORIAN)-1).day
+    end
+
+    def _last_day_of_month_from_defs(year, month, is_leap)
+      yobj = YEAR_BY_NUM[year] or
+        raise UnsupportedDateRange, "Cannot find year #{self.inspect}"
+      month_idx = month - 1
+      if is_leap || yobj.leap_month && yobj.leap_month < month
+        month_idx += 1
+      end
+      yobj.month_days[month_idx]
     end
 
     def alt_month_name_to_i(name)
@@ -145,9 +154,8 @@ module Wareki
 
     def find_date_ary(d)
       d = _to_date(d).new_start(::Date::GREGORIAN)
-      if d.jd >= GREGORIAN_START
+      d.jd >= GREGORIAN_START and
         return [d.year, d.month, d.day, false]
-      end
 
       yobj = find_year(d) or raise UnsupportedDateRange, "Unsupported date: #{d.inspect}"
       month = 0
@@ -159,9 +167,8 @@ module Wareki
       end
       month_start = yobj.month_starts[month-1]
       is_leap = (yobj.leap_month == (month - 1))
-      if yobj.leap_month && yobj.leap_month < month
+      yobj.leap_month && yobj.leap_month < month and
         month -= 1
-      end
       [yobj.year, month, d.jd - month_start +1, is_leap]
     end
 

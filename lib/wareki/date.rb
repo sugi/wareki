@@ -13,17 +13,15 @@ module Wareki
 
     def self._parse(str)
       match = REGEX.match(str.to_s.gsub(/[[:space:]]/, ''))
-      if !match || !match[:year]
+      !match || !match[:year] and
         raise ArgumentError, "Invaild Date: #{str}"
-      end
       era = match[:era_name]
       year = Utils.kan_to_i(match[:year])
       month = 1
       day = 1
 
-      if era.to_s != "" && era.to_s != "紀元前" && !ERA_BY_NAME[era]
+      era.to_s != "" && era.to_s != "紀元前" && !ERA_BY_NAME[era] and
         raise ArgumentError, "Date parse failed: Invalid era name '#{match[:era_name]}'"
-      end
 
       if match[:month]
         month = Utils.kan_to_i(match[:month])
@@ -44,7 +42,7 @@ module Wareki
 
       if (era == "明治" && year == 5 ||
           era.to_s == "" && year == GREGORIAN_START_YEAR - 1 ||
-          (era == "皇紀" || era == "神武天皇即位紀元") &&
+          %w(皇紀 神武天皇即位紀元).member?(era) &&
           year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) &&
           month == 12 && day > 2
         raise ArgumentError, "Invaild Date: #{str}"
@@ -234,23 +232,19 @@ module Wareki
     end
 
     def -(other)
-      if other.class.to_s == "ActiveSupport::Duration"
-        raise NotImplementedError, "Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric."
-      else
-        other.respond_to?(:to_date) and other = other.to_date
-        other.respond_to?(:jd) and other = other.jd
-        self.class.jd jd - other
-      end
+      self.class.jd jd - _to_jd_for_calc(other)
     end
 
     def +(other)
-      if other.class.to_s == "ActiveSupport::Duration"
+      self.class.jd jd + _to_jd_for_calc(other)
+    end
+
+    def _to_jd_for_calc(other)
+      other.class.to_s == "ActiveSupport::Duration" and
         raise NotImplementedError, "Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric."
-      else
-        other.respond_to?(:to_date) and other = other.to_date
-        other.respond_to?(:jd) and other = other.jd
-        self.class.jd jd + other
-      end
+      other.respond_to?(:to_date) and other = other.to_date
+      other.respond_to?(:jd) and other = other.jd
+      other
     end
   end
 end
