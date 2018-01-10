@@ -28,8 +28,7 @@ module Wareki
         raise ArgumentError, "Invaild Date: #{str}"
       era = match[:era_name]
       year = Utils.kan_to_i(match[:year])
-      month = 1
-      day = 1
+      month = day = 1
 
       era.to_s != "" && era.to_s != "紀元前" && !ERA_BY_NAME[era] and
         raise ArgumentError, "Date parse failed: Invalid era name '#{match[:era_name]}'"
