@@ -79,14 +79,11 @@ module Wareki
     end
 
     def initialize(era_name, era_year, month = 1, day = 1, is_leap_month = false)
-      if era_name.to_s != "" && era_name != "紀元前" && !ERA_BY_NAME[era_name]
+      era_name.to_s != "" && era_name != "紀元前" && !ERA_BY_NAME[era_name] and
         raise ArgumentError, "Undefined era '#{era_name}'"
+      %w(month day is_leap_month era_name era_year).each do |vname|
+        instance_variable_set "@#{vname}", binding.local_variable_get(vname)
       end
-      @month = month
-      @day = day
-      @is_leap_month = is_leap_month
-      @era_name = era_name
-      @era_year = era_year
       if era_name.to_s == "" || era_name == "西暦"
         @year = @era_year
       elsif era_name == "皇紀" || era_name == "神武天皇即位紀元"
