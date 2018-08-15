@@ -45,7 +45,7 @@ Gemfile に以下のようにするか、
  Wareki::Date.new("明治", 8, 2, 1).to_date # => 標準 Date インスタンス 1875-02-01
 
  Wareki::Date.parse("正嘉元年 うるう3月 １２日") # => Wareki::Date インスタンス
- Date.parse("正嘉元年 うるう3月 １２日)" # => 標準 Date インスタンス 1257-04-27
+ Date.parse("正嘉元年 うるう3月 １２日") # => 標準 Date インスタンス 1257-04-27
 
 == フォーマット文字列
 
