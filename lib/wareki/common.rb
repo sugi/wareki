@@ -17,6 +17,9 @@ module Wareki
     alt_era_name == era_name and next
     ERA_BY_NAME[alt_era_name] = ERA_BY_NAME[era_name]
   end
+  {'㍾' => '明治', '㍽' => '大正', '㍼' => '昭和', '㍻' => '平成'}.each do |short, canon|
+    ERA_BY_NAME[short] = ERA_BY_NAME[canon]
+  end
   ERA_BY_NAME.freeze
   NUM_CHARS = "零〇一二三四五六七八九十卄廿卅丗卌肆百皕千万億兆0123456789０１２３４５６７８９"
   ALT_MONTH_NAME = %w(睦月 如月 弥生 卯月 皐月 水無月 文月 葉月 長月 神無月 霜月 師走).freeze

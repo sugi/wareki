@@ -180,4 +180,10 @@ describe Wareki::Date do
   it "can handle last days of year" do
     expect(Date.parse("1868/1/24").strftime('%JF')).to eq "慶応三年十二月三十日"
   end
+
+  it "can parse short era name" do
+    {'㍾' => '明治', '㍽' => '大正', '㍼' => '昭和', '㍻' => '平成'}.each do |short, canon|
+      expect(Date.parse("#{short}十年３月9日").strftime('%Jf')).to eq "#{canon}10年3月9日"
+    end
+  end
 end
