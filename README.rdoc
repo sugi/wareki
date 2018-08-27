@@ -41,11 +41,12 @@ Gemfile に以下のようにするか、
  Date.today.strftime("%JF")              # => "平成二十七年八月二十二日"
  Date.civil(1311, 7, 20).strftime("%JF") # => "応長元年閏六月四日"
 
- Date.today.to_wareki_date # => Wareki::Date インスタンス
- Wareki::Date.new("明治", 8, 2, 1).to_date # => 標準 Date インスタンス 1875-02-01
-
- Wareki::Date.parse("正嘉元年 うるう3月 １２日") # => Wareki::Date インスタンス
  Date.parse("正嘉元年 うるう3月 １２日") # => 標準 Date インスタンス 1257-04-27
+
+ # Wareki::Date を直接扱う場合
+ Date.today.to_wareki_date # => Wareki::Date インスタンス
+ Wareki::Date.parse("正嘉元年 うるう3月 １２日") # => Wareki::Date インスタンス
+ Wareki::Date.new("明治", 8, 2, 1).to_date # => 標準 Date インスタンス 1875-02-01
 
 == フォーマット文字列
 

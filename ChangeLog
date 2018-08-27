@@ -1,3 +1,8 @@
+2018-08-27  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version: 0.2.1
+	* Support square era name chars (㍾ ㍽ ㍼ ㍻)
+
 2017-07-25  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version: 0.2.0
