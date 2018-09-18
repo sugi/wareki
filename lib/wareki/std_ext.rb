@@ -26,7 +26,7 @@ class Date
     alias _wareki_parse_orig parse
     def parse(str, comp = true, start = ::Date::ITALY)
       Wareki::Date.parse(str).to_date(start)
-    rescue ArgumentError, UnsupportedDateRange
+    rescue ArgumentError, Wareki::UnsupportedDateRange
       ::Date._wareki_parse_orig(str, comp, start)
     end
   end
