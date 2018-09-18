@@ -69,6 +69,11 @@ describe Wareki::Date do
     expect(Wareki::Date.jd(d2.jd)).not_to eql 1
   end
 
+  it "can be converted from date" do
+    expect(Date.new(654, 2, 5, Date::GREGORIAN).to_wareki_date).to be_a(Wareki::Date)
+    expect(Date.new(3000, 1, 1, Date::GREGORIAN).to_wareki_date).to be_a(Wareki::Date)
+  end
+
   it "can be converted to julian day number" do
     matchings.each do |civil, wareki|
       d = Date.civil(*civil)
@@ -107,6 +112,14 @@ describe Wareki::Date do
     }.to raise_error(NotImplementedError)
   end
 
+  it "raises exception with unsupported date" do
+    expect { Date.new(100, 1, 1, Date::GREGORIAN).to_wareki_date }.to raise_error(Wareki::UnsupportedDateRange)
+    expect { Date.new(445, 1, 1, Date::GREGORIAN).to_wareki_date }.to raise_error(Wareki::UnsupportedDateRange)
+    expect { Wareki::Date.parse("明治5年12月3日") }.to raise_error(ArgumentError)
+    expect { Wareki::Date.parse("明治5年12月31日") }.to raise_error(ArgumentError)
+    expect { Wareki::Date.parse("皇紀2532年12月5日") }.to raise_error(ArgumentError)
+  end
+
   it "can parse date string" do
     d = Wareki::Date
     expect(d.parse("平成４年").to_date).to eq Wareki.parse_to_date("平成４年")
@@ -132,6 +145,7 @@ describe Wareki::Date do
     expect(d.parse("紀元前203年12月31日").to_date).to eq Date.new(-203, 12, 31)
     expect(d.parse("紀元前4年7月").to_date).to eq Date.new(-4, 7, 1)
     expect(d.parse("紀元前9876年4月2日").to_date).to eq Date.new(-9876, 4, 2)
+    expect(d.parse("明治5年12月2日").to_date).to eq Date.new(1872, 12, 31)
 
     expect { d.parse("謎元号100年2月3日") }.to raise_error(ArgumentError)
     expect { d.parse("昭和2月3日") }.to raise_error(ArgumentError)

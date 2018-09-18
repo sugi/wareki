@@ -15,11 +15,10 @@ module Wareki
       month == 12 or return true
       day > 2 or return true
       (era == '明治' && year == 5 ||
-       era.to_s == '' && year == GREGORIAN_START_YEAR - 1 ||
        %w(皇紀 神武天皇即位紀元).member?(era) &&
-       year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) or
-        return true
-      false
+       year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) and
+        return false
+      true
     end
 
     def self._parse(str)
