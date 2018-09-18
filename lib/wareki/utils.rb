@@ -1,107 +1,17 @@
-# coding: utf-8
 module Wareki
+  # Static utility methods.
   module Utils
-    UNIT_SUFFIX1 = {
-      '千' => 1000,
-      '百' => 100,
-      '十' => 10,
-      ''   => 1,
-    }
-    UNIT_SUFFIX2 = {
-      '京' => 10000000000000000,
-      '兆' => 1000000000000,
-      '億' => 100000000,
-      '万' => 10000,
-      ''   => 1,
-    }
     module_function
-    def kan_to_i(str)
-      ret3 = 0
-      ret4 = 0
-      curnum = nil
-      str == "零" and return 0
-      str.to_s.each_char do |c|
-        case c
-        when *%w(正 元 朔 一 二 三 四 五 六 七 八 九 肆 1 2 3 4 5 6 7 8 9 １ ２ ３ ４ ５ ６ ７ ８ ９)
-          if curnum
-            curnum *= 10
-          else
-            curnum = 0
-          end
-          curnum += c.tr("一二三四五六七八九１２３４５６７８９肆元朔正", "1234567891234567894111").to_i
-        when "〇", "０", "0"
-          curnum and curnum *= 10
-        when "卄", "廿"
-          ret3 += 20
-          curnum = nil
-        when "卅", "丗"
-          ret3 += 30
-          curnum = nil
-        when "卌"
-          ret3 += 40
-          curnum = nil
-        when "皕"
-          ret3 += 200
-          curnum = nil
-        when "万", "億", "兆", "京", "垓"
-          if curnum
-            ret3 += curnum
-            curnum = nil
-          end
-          ret3 = 1 if ret3 == 0
-          ret4 += ret3 * 10 ** ((["万", "億", "兆", "京", "垓"].index(c)+1)*4)
-          ret3 = 0
-        when "十", "百", "千"
-          curnum ||= 1
-          ret3 += curnum * 10 ** (["十", "百", "千"].index(c)+1)
-          curnum = nil
-        end
-      end
-      if curnum
-        ret3 += curnum
-        curnum = nil
-      end
-      ret4 + ret3
-    end
-
-    def i_to_kan(num, opts = {})
-      ret = ''
-      UNIT_SUFFIX2.each do |unit4, rank4|
-        i4 = (num / rank4).to_i % 10000
-        if i4 == 0
-          next
-        elsif i4 == 1
-          ret += "一#{unit4}"
-          next
-        end
-        UNIT_SUFFIX1.each do |unit1, rank1|
-          i1 = (i4 / rank1).to_i % 10
-          if i1 == 0
-            next
-          elsif i1 == 1 && unit1 != ""
-            ret += unit1
-          else
-            ret += i1.to_s.tr('123456789', '一二三四五六七八九') + unit1
-          end
-        end
-        ret += unit4
-      end
-      ret
-    end
-
-    def i_to_zen(num)
-      num.to_s.tr('0123456789', '０１２３４５６７８９')
-    end
 
     def last_day_of_month(year, month, is_leap)
       if year >= GREGORIAN_START_YEAR
-        _last_day_of_month_gregorian(year, month, is_leap)
+        _last_day_of_month_gregorian(year, month)
       else
         _last_day_of_month_from_defs(year, month, is_leap)
       end
     end
 
-    def _last_day_of_month_gregorian(year, month, is_leap)
+    def _last_day_of_month_gregorian(year, month)
       tmp_y = year
       tmp_m = month
       if month == 12
@@ -110,16 +20,14 @@ module Wareki
       else
         tmp_m += 1
       end
-      (::Date.new(tmp_y, tmp_m, 1, ::Date::GREGORIAN)-1).day
+      (::Date.new(tmp_y, tmp_m, 1, ::Date::GREGORIAN) - 1).day
     end
 
     def _last_day_of_month_from_defs(year, month, is_leap)
       yobj = YEAR_BY_NUM[year] or
-        raise UnsupportedDateRange, "Cannot find year #{self.inspect}"
+        raise UnsupportedDateRange, "Cannot find year #{inspect}"
       month_idx = month - 1
-      if is_leap || yobj.leap_month && yobj.leap_month < month
-        month_idx += 1
-      end
+      month_idx += 1 if is_leap || yobj.leap_month && yobj.leap_month < month
       yobj.month_days[month_idx]
     end
 
@@ -133,9 +41,9 @@ module Wareki
     end
 
     def _to_date(d)
-      if d.kind_of? ::Date
+      if d.is_a? ::Date
         d # nothing to do
-      elsif d.kind_of?(Time)
+      elsif d.is_a?(Time)
         d.to_date
       else
         ::Date.jd(d.to_i)
@@ -143,9 +51,9 @@ module Wareki
     end
 
     def _to_jd(d)
-      if d.kind_of? ::Date
+      if d.is_a? ::Date
         d.jd
-      elsif d.kind_of?(Time)
+      elsif d.is_a?(Time)
         d.to_date.jd
       else
         d.to_i
@@ -159,32 +67,31 @@ module Wareki
 
       yobj = find_year(d) or raise UnsupportedDateRange, "Unsupported date: #{d.inspect}"
       month = 0
-      is_leap = false
       if yobj.month_starts.last <= d.jd
         month = yobj.month_starts.count
       else
-        month = yobj.month_starts.find_index {|m| d.jd <= (m - 1) }
+        month = yobj.month_starts.find_index { |m| d.jd <= (m - 1) }
       end
-      month_start = yobj.month_starts[month-1]
+      month_start = yobj.month_starts[month - 1]
       is_leap = (yobj.leap_month == (month - 1))
       yobj.leap_month && yobj.leap_month < month and
         month -= 1
-      [yobj.year, month, d.jd - month_start +1, is_leap]
+      [yobj.year, month, d.jd - month_start + 1, is_leap]
     end
 
     def find_year(d)
       jd = _to_jd(d)
-      YEAR_DEFS.bsearch{|y| y.end >= jd }
+      YEAR_DEFS.bsearch { |y| y.end >= jd }
     end
 
     def find_era(d)
       jd = _to_jd(d)
-      ERA_DEFS.reverse_each { |e|
+      ERA_DEFS.reverse_each do |e|
         e.start > jd and next
         e.end < jd and next
         return e
-      }
-      return nil
+      end
+      nil
     end
   end
 end

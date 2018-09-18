@@ -1,0 +1,63 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  AllowSymlinksInCacheRootDirectory: true
+  Exclude:
+    - lib/wareki/*_def.rb
+    - spec/**/*
+    - tmp/**/*
+    - build-util/*
+
+Gemspec/RequiredRubyVersion:
+  Exclude:
+    - 'wareki.gemspec' # Required to support 2.0
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/PerlBackrefs:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+Style/RegexpLiteral:
+  EnforcedStyle: mixed
+
+Naming/UncommunicativeMethodParamName:
+  AllowedNames: jd, d, v
+
+Layout/IndentHeredoc:
+  Enabled: false # Disable for ruby 2.0...
+
+Metrics/LineLength:
+  Max: 130
+
+Style/DoubleNegation:
+  Exclude:
+    - 'build-util/gen-jp-cal-def.rb'
+    - 'lib/wareki/date.rb'
+
+Metrics/ClassLength:
+  Max: 220
+
+Metrics/MethodLength:
+  Max: 50
+
+# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
+# SupportedStyles: assign_to_condition, assign_inside_condition
+Style/ConditionalAssignment:
+  EnforcedStyle: assign_inside_condition
+
+# Configuration parameters: CountComments, ExcludedMethods.
+# ExcludedMethods: refine
+Metrics/BlockLength:
+  ExcludedMethods:
+    - each_char # for Kansuji.kan_to_i...
+

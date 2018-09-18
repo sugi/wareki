@@ -1,10 +1,10 @@
-# coding: utf-8
 require 'date'
 require 'wareki/common'
 require 'wareki/utils'
+require 'wareki/kansuji'
 module Wareki
+  # Wareki date handling class, main implementation.
   class Date
-    attr_reader :jd
     attr_accessor :year, :month, :day, :era_year, :era_name
 
     def self.today
@@ -14,8 +14,8 @@ module Wareki
     def self._check_invalid_date(era, year, month, day)
       month == 12 or return true
       day > 2 or return true
-      (era == "明治" && year == 5 ||
-       era.to_s == "" && year == GREGORIAN_START_YEAR - 1 ||
+      (era == '明治' && year == 5 ||
+       era.to_s == '' && year == GREGORIAN_START_YEAR - 1 ||
        %w(皇紀 神武天皇即位紀元).member?(era) &&
        year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) or
         return true
@@ -23,18 +23,18 @@ module Wareki
     end
 
     def self._parse(str)
-      match = REGEX.match(str.to_s.gsub(/[[:space:]]/, '')) or 
+      match = REGEX.match(str.to_s.gsub(/[[:space:]]/, '')) or
         raise ArgumentError, "Invaild Date: #{str}"
       era = match[:era_name]
-      (year = Utils.kan_to_i(match[:year])) > 0 or
+      (year = Kansuji.k2i(match[:year])) > 0 or
         raise ArgumentError, "Invalid year: #{str}"
       month = day = 1
 
-      era.to_s != "" && era.to_s != "紀元前" && !ERA_BY_NAME[era] and
+      era.to_s != '' && era.to_s != '紀元前' && !ERA_BY_NAME[era] and
         raise ArgumentError, "Date parse failed: Invalid era name '#{match[:era_name]}'"
 
       if match[:month]
-        month = Utils.kan_to_i(match[:month])
+        month = Kansuji.k2i(match[:month])
       elsif match[:alt_month]
         month = Utils.alt_month_name_to_i(match[:alt_month])
       end
@@ -43,10 +43,10 @@ module Wareki
         raise ArgumentError, "Invalid month: #{str}"
 
       if match[:day]
-        if match[:day] == "晦"
-          day = Utils.last_day_of_month(ERA_BY_NAME[era].year + year -1, month, match[:is_leap])
+        if match[:day] == '晦'
+          day = Utils.last_day_of_month(ERA_BY_NAME[era].year + year - 1, month, match[:is_leap])
         else
-          day = Utils.kan_to_i(match[:day])
+          day = Kansuji.k2i(match[:day])
         end
       end
 
@@ -75,24 +75,24 @@ module Wareki
     end
 
     def self.imperial(year, month = 1, day = 1, is_leap_month = false)
-      new("皇紀", year, month, day, is_leap_month)
+      new('皇紀', year, month, day, is_leap_month)
     end
 
     def initialize(era_name, era_year, month = 1, day = 1, is_leap_month = false)
-      if era_name.to_s != "" && era_name != "紀元前" && !ERA_BY_NAME[era_name]
-        raise ArgumentError, "Undefined era '#{era_name}'"
-      end
+      raise ArgumentError, "Undefined era '#{era_name}'" if
+        era_name.to_s != '' && era_name != '紀元前' && !ERA_BY_NAME[era_name]
+
       @month = month
       @day = day
       @is_leap_month = is_leap_month
       @era_name = era_name
       @era_year = era_year
-      if era_name.to_s == "" || era_name == "西暦"
+      if era_name.to_s == '' || era_name == '西暦'
         @year = @era_year
-      elsif era_name == "皇紀" || era_name == "神武天皇即位紀元"
-        @year = era_year + IMPERIAL_START_YEAR
-      elsif era_name.to_s == "紀元前"
+      elsif era_name.to_s == '紀元前'
         @year = -@era_year
+      elsif %w(皇紀 神武天皇即位紀元).include? era_name
+        @year = era_year + IMPERIAL_START_YEAR
       else
         @year = ERA_BY_NAME[era_name].year + era_year - 1
       end
@@ -119,30 +119,27 @@ module Wareki
     end
 
     def month_index
-      if @era_name == "" || @era_name == "西暦" || @era_name == "紀元前" || @year >= GREGORIAN_START_YEAR
-        return month -1
-      end
+      return month - 1 if
+        ['', '西暦', '紀元前'].include?(@era_name) || @year >= GREGORIAN_START_YEAR
 
       yobj = YEAR_BY_NUM[@year] or
-        raise UnsupportedDateRange, "Cannot get year info of #{self.inspect}"
+        raise UnsupportedDateRange, "Cannot get year info of #{inspect}"
       idx = month - 1
-      if leap_month? || yobj.leap_month && month > yobj.leap_month
-        idx += 1
-      end
+      idx += 1 if leap_month? || yobj.leap_month && month > yobj.leap_month
       idx
     end
 
     def jd
       @jd and return @jd
 
-      if @era_name == "西暦" || @era_name == "" || @era_name == "紀元前"
+      ['', '西暦', '紀元前'].include?(@era_name) and
         return @jd = ::Date.new(@year, month, day, ::Date::ITALY).jd
-      elsif @year >= GREGORIAN_START_YEAR
+
+      @year >= GREGORIAN_START_YEAR and
         return @jd = ::Date.new(@year, month, day, ::Date::GREGORIAN).jd
-      end
 
       yobj = YEAR_BY_NUM[@year] or
-        raise UnsupportedDateRange, "Cannot convert to jd #{self.inspect}"
+        raise UnsupportedDateRange, "Cannot convert to jd #{inspect}"
       @jd = yobj.month_starts[month_index] + day - 1
     end
 
@@ -154,83 +151,81 @@ module Wareki
       to_date.to_time
     end
 
-    def strftime(format_str = "%JF")
+    def strftime(format_str = '%JF')
       ret = format_str.to_str.gsub(/%J([fFyYegGoOiImMsSlLdD][kK]?)/) { format($1) || $& }
-      ret.index("%") or return ret
+      ret.index('%') or return ret
       d = to_date
       d.respond_to?(:_wareki_strftime_orig) ? d._wareki_strftime_orig(ret) : d.strftime(ret)
     end
 
     def format(key)
       case key.to_sym
-      when :e; era_name
-      when :g; era_name.to_s == "" ? '' : era_year
-      when :G; era_name.to_s == "" ? '' : Utils.i_to_zen(era_year)
-      when :Gk; era_name.to_s == "" ? '' : Utils.i_to_kan(era_year)
+      when :e  then era_name
+      when :g  then era_name.to_s == '' ? '' : era_year
+      when :G  then era_name.to_s == '' ? '' : Kansuji.i2z(era_year)
+      when :Gk then era_name.to_s == '' ? '' : Kansuji.i2k(era_year)
       when :GK
-        if era_name.to_s == ""
+        if era_name.to_s == ''
           ''
         elsif era_year == 1
-          "元"
+          '元'
         else
-          Utils.i_to_kan(era_year)
+          Kansuji.i2k(era_year)
         end
-      when :o; year
-      when :O; Utils.i_to_zen(year)
-      when :Ok; Utils.i_to_kan(year)
-      when :i; imperial_year
-      when :I; Utils.i_to_zen(imperial_year)
-      when :Ik; Utils.i_to_kan(imperial_year)
-      when :s; month
-      when :S; Utils.i_to_zen(month)
-      when :Sk; Utils.i_to_kan(month)
-      when :SK; Utils.alt_month_name(month)
-      when :l; leap_month? ? "'" : ""
-      when :L; leap_month? ? "’" : ""
-      when :Lk; leap_month? ? "閏" : ""
-      when :d; day
-      when :D; Utils.i_to_zen(day)
-      when :Dk; Utils.i_to_kan(day)
+      when :o  then year
+      when :O  then Kansuji.i2z(year)
+      when :Ok then Kansuji.i2k(year)
+      when :i  then imperial_year
+      when :I  then Kansuji.i2z(imperial_year)
+      when :Ik then Kansuji.i2k(imperial_year)
+      when :s  then month
+      when :S  then Kansuji.i2z(month)
+      when :Sk then Kansuji.i2k(month)
+      when :SK then Utils.alt_month_name(month)
+      when :l  then leap_month? ? "'" : ''
+      when :L  then leap_month? ? '’' : ''
+      when :Lk then leap_month? ? '閏' : ''
+      when :d  then day
+      when :D  then Kansuji.i2z(day)
+      when :Dk then Kansuji.i2k(day)
       when :DK
         if month == 1 && !leap_month? && day == 1
-          "元"
+          '元'
         elsif day == 1
-          "朔"
+          '朔'
         elsif day == Utils.last_day_of_month(year, month, leap_month?)
-          "晦"
+          '晦'
         else
-          Utils.i_to_kan(day)
+          Kansuji.i2k(day)
         end
-      when :m; "#{format(:s)}#{format(:l)}"
-      when :M; "#{format(:Lk)}#{format(:S)}"
-      when :Mk; "#{format(:Lk)}#{format(:Sk)}"
-      when :y; "#{format(:e)}#{format(:g)}"
-      when :Y; "#{format(:e)}#{format(:G)}"
-      when :Yk; "#{format(:e)}#{format(:Gk)}"
-      when :YK; "#{format(:e)}#{format(:GK)}"
-      when :f; "#{format(:e)}#{format(:g)}年#{format(:s)}#{format(:l)}月#{format(:d)}日"
-      when :F; "#{format(:e)}#{format(:GK)}年#{format(:Lk)}#{format(:Sk)}月#{format(:Dk)}日"
-      else
-        nil
+      when :m  then "#{format(:s)}#{format(:l)}"
+      when :M  then "#{format(:Lk)}#{format(:S)}"
+      when :Mk then "#{format(:Lk)}#{format(:Sk)}"
+      when :y  then "#{format(:e)}#{format(:g)}"
+      when :Y  then "#{format(:e)}#{format(:G)}"
+      when :Yk then "#{format(:e)}#{format(:Gk)}"
+      when :YK then "#{format(:e)}#{format(:GK)}"
+      when :f  then "#{format(:e)}#{format(:g)}年#{format(:s)}#{format(:l)}月#{format(:d)}日"
+      when :F  then "#{format(:e)}#{format(:GK)}年#{format(:Lk)}#{format(:Sk)}月#{format(:Dk)}日"
       end
     end
 
     def eql?(other)
       begin
-        [:year, :month, :day, :era_year, :era_name, :leap_month?].each do |attr|
+        %i[year month day era_year era_name leap_month?].each do |attr|
           other.public_send(attr) == public_send(attr) or return false
         end
-      rescue => e
+      rescue NoMethodError, NotImplementedError
         return false
       end
       true
     end
-    alias_method :==, :eql?
+    alias == eql?
 
     def ===(other)
       begin
         other.jd == jd or return false
-      rescue => e
+      rescue NoMethodError, NotImplementedError
         return false
       end
       true
@@ -245,8 +240,8 @@ module Wareki
     end
 
     def _to_jd_for_calc(other)
-      other.class.to_s == "ActiveSupport::Duration" and
-        raise NotImplementedError, "Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric."
+      other.class.to_s == 'ActiveSupport::Duration' and
+        raise NotImplementedError, 'Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric.'
       other.respond_to?(:to_date) and other = other.to_date
       other.respond_to?(:jd) and other = other.jd
       other

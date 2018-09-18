@@ -1,19 +1,21 @@
 require 'date'
 require 'wareki/date'
 module Wareki
+  # :nodoc:
   module StdExt
   end
 end
+# :nodoc:
 class Date
   JAPAN = Wareki::GREGORIAN_START
 
   def to_wareki_date
-    Wareki::Date.jd(self.jd)
+    Wareki::Date.jd(jd)
   end
 
-  alias_method :_wareki_strftime_orig, :strftime
-  def strftime(format = "%F")
-    if format.index("%J")
+  alias _wareki_strftime_orig strftime
+  def strftime(format = '%F')
+    if format.index('%J')
       to_wareki_date.strftime(format)
     else
       _wareki_strftime_orig(format)
@@ -21,13 +23,11 @@ class Date
   end
 
   class << self
-    alias_method :_wareki_parse_orig, :parse
+    alias _wareki_parse_orig parse
     def parse(str, comp = true, start = ::Date::ITALY)
-      begin
-        Wareki::Date.parse(str).to_date(start)
-      rescue => e
-        ::Date._wareki_parse_orig(str, comp, start)
-      end
+      Wareki::Date.parse(str).to_date(start)
+    rescue ArgumentError, UnsupportedDateRange
+      ::Date._wareki_parse_orig(str, comp, start)
     end
   end
 end

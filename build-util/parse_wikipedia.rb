@@ -1,16 +1,17 @@
 #!/usr/bin/ruby
 # coding: utf-8
+
 require 'open-uri'
 require 'nokogiri'
 require 'date'
 require 'pp'
 
-require File.dirname(__FILE__)+'/../lib/wareki/calendar_def'
+require File.dirname(__FILE__) + '/../lib/wareki/calendar_def'
 
 module Wareki; end
 class Wareki::Generator
   TARGET_URL = ARGV.first || 'https://ja.wikipedia.org/wiki/%E5%85%83%E5%8F%B7%E4%B8%80%E8%A6%A7_%28%E6%97%A5%E6%9C%AC%29'
-  INF_DATE = Date.new(2**(0.size * 8 -2) -1, 12, 31) # Use max Fixnum as year.
+  INF_DATE = Date.new(2**(0.size * 8 - 2) - 1, 12, 31) # Use max Fixnum as year.
 
   def generate(filename)
     open(filename, 'w') do |f|
@@ -33,7 +34,7 @@ class Wareki::Generator
         if d[:start].new_start(Date::GREGORIAN).year >= 1873
           year = Date.new(d[:start].year, 1, 1, Date::GREGORIAN).year
         else
-          year = Wareki::YEAR_DEFS.bsearch{|y| y.end > d[:start].jd }.year
+          year = Wareki::YEAR_DEFS.bsearch { |y| y.end > d[:start].jd }.year
         end
         ret << %Q{#{indent}Era.new("#{g}", #{year}, #{d[:start].jd}, #{d[:end].jd}),}
       end
@@ -55,7 +56,7 @@ class Wareki::Generator
       table.css('tr').each_with_index do |tr, tr_idx|
         tr_idx < 2 and next
         tr.css('th').empty? and next
-        cols = tr.css('th, td').map {|n| n.text.strip }
+        cols = tr.css('th, td').map { |n| n.text.strip }
         cols[0] == '－' || cols[0].empty? and next
         if era_n[cols[0]] || era_s[cols[0]]
           warn "WARN Overwrite: #{cols[0]}"
@@ -98,6 +99,5 @@ class Wareki::Generator
 end
 
 if $0 == __FILE__
-  Wareki::Generator.new.generate(File.dirname(__FILE__)+'/../lib/wareki/era_def.rb')
+  Wareki::Generator.new.generate(File.dirname(__FILE__) + '/../lib/wareki/era_def.rb')
 end
-
