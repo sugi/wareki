@@ -112,9 +112,3 @@ Gemfile に以下のようにするか、
 == 作者
 
 Tatsuki Sugiura <sugi@nemui.org>
-
-== TODO
-* 北朝モード
-* Wareki::Date で各種計算のサポート
-* 元号として "西暦" サポート?
-* 元号の切り替え日を和暦ベースで計算するようにする?
