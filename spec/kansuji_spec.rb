@@ -1,4 +1,3 @@
-# coding: utf-8
 describe Wareki::Kansuji do
   u = Wareki::Kansuji
 

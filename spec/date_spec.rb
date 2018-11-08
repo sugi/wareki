@@ -1,4 +1,3 @@
-# coding: utf-8
 describe Wareki::Date do
   matchings = {
     # civil date => wareki date

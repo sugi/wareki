@@ -1,4 +1,3 @@
-# coding: utf-8
 describe Wareki::Utils do
   u = Wareki::Utils
 
@@ -7,7 +6,7 @@ describe Wareki::Utils do
     era = u.find_era(d1)
     expect(era.name).to eq "万延"
 
-    d2 = Date.new(1860, 4, 7)
+    d2 = Time.new(1860, 4, 7, 12, 1, 2)
     era = u.find_era(d2)
     expect(era.name).to eq "安政"
   end
