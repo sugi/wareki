@@ -21,7 +21,7 @@ module Wareki
     ERA_BY_NAME[short] = ERA_BY_NAME[canon]
   end
   ERA_BY_NAME.freeze
-  NUM_CHARS = '零〇一二三四五六七八九十卄廿卅丗卌肆百皕千万億兆0123456789０１２３４５６７８９'.freeze
+  NUM_CHARS = '零壱壹弌弐貳貮参參弎肆伍陸漆質柒捌玖〇一二三四五六七八九十拾什卄廿卅丗卌百陌佰皕阡仟千万萬億兆京垓0123456789０１２３４５６７８９'.freeze
   ALT_MONTH_NAME = %w(睦月 如月 弥生 卯月 皐月 水無月 文月 葉月 長月 神無月 霜月 師走).freeze
   REGEX = %r{^
     (?<era_name>西暦|紀元前|#{ERA_BY_NAME.keys.join('|')})?
@@ -30,7 +30,7 @@ module Wareki
       (?:(?<month>[正#{NUM_CHARS}]+)月 |
          (?<alt_month>#{ALT_MONTH_NAME.join('|')})))?
     (?:(?<day>[元朔晦#{NUM_CHARS}]+)日)?
-  $}x
+  $}x.freeze
 
   class UnsupportedDateRange < StandardError; end
 

@@ -14,6 +14,11 @@ describe Wareki::Kansuji do
     expect(u.kan_to_i("五万廿")).to eq 50020
     expect(u.kan_to_i("百七十八万二")).to eq 1780002
     expect(u.kan_to_i("九億６千万卌一")).to eq 960000041
+    expect(u.kan_to_i("肆陸")).to eq 46
+    expect(u.kan_to_i("弐仟柒佰玖什")).to eq 2790
+    expect(u.kan_to_i("捌萬貳拾")).to eq 80020
+    expect(u.kan_to_i("伍〇")).to eq 50
+    expect(u.kan_to_i("000023")).to eq 23
   end
 
   it "converts kansuji to integer with k2i" do

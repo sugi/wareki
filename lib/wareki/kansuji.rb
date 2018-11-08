@@ -18,23 +18,23 @@ module Wareki
     module_function
 
     def kan_to_i(str)
+      str = str.to_s.tr(
+        '〇一二三四五六七八九０１２３４５６７８９零正元朔壱壹弌弐貳貮参參弎肆伍陸漆質柒捌玖拾什陌佰阡仟萬',
+        '01234567890123456789011111122233345677789十十百百千千万'
+      )
       ret3 = 0
       ret4 = 0
       curnum = nil
-      str == '零' and return 0
-      str.to_s.each_char do |c|
+      str.each_char do |c|
         case c
-        when '正', '元', '朔',
-          '一', '二', '三', '四', '五', '六', '七', '八', '九', '肆',
-          '1', '2', '3', '4', '5', '6', '7', '8', '9',
-          '１', '２', '３', '４', '５', '６', '７', '８', '９'
+        when '1', '2', '3', '4', '5', '6', '7', '8', '9'
           if curnum
             curnum *= 10
           else
             curnum = 0
           end
-          curnum += c.tr('一二三四五六七八九１２３４５６７８９肆元朔正', '1234567891234567894111').to_i
-        when '〇', '０', '0'
+          curnum += c.to_i
+        when '0'
           curnum and curnum *= 10
         when '卄', '廿'
           ret3 += 20
