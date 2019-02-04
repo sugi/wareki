@@ -11,4 +11,4 @@ rvm:
   - "2.6"
   - ruby-head
 before_install:
-  - gem install bundler --no-rdoc --no-ri
+  - type bundle || gem install bundler
