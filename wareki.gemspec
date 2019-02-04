@@ -23,10 +23,10 @@ formatting, and bi-directional convertion with standard Date class.
 
   spec.required_ruby_version = '>= 2.0.0'
   if RUBY_VERSION >= '2.1.0' && !defined?(JRUBY_VERSION)
-    spec.add_development_dependency 'bundler', '~> 1.9'
+    spec.add_development_dependency 'bundler', '>= 1.9'
   else
     spec.add_development_dependency 'bundler'
   end
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'rake', '>= 10.0'
   spec.add_development_dependency 'rspec'
 end
