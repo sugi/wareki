@@ -25,8 +25,12 @@ module Wareki
       match = REGEX.match(str.to_s.gsub(/[[:space:]]/, '')) or
         raise ArgumentError, "Invaild Date: #{str}"
       era = match[:era_name]
-      (year = Kansuji.k2i(match[:year])) > 0 or
-        raise ArgumentError, "Invalid year: #{str}"
+      if (era.nil? || era == '') && match[:year].nil?
+        year = Date.today.year
+      else
+        (year = Kansuji.k2i(match[:year])) > 0 or
+          raise ArgumentError, "Invalid year: #{str}"
+      end
       month = day = 1
 
       era.to_s != '' && era.to_s != '紀元前' && !ERA_BY_NAME[era] and

@@ -162,6 +162,16 @@ describe Wareki::Date do
     expect(d.parse("\t\n　1 9 2 8 年 3 月　１１ 日  ").to_date).to eq exd
   end
 
+  it "can parse date string without year" do
+    today = Date.today
+    d = Wareki::Date
+    expect(d.parse("8月22日").to_date).to eq Date.new(today.year, 8, 22)
+    expect(d.parse("2月25日").to_date).to eq Date.new(today.year, 2, 25)
+    expect(d.parse("10月2日").to_date).to eq Date.new(today.year, 10, 2)
+    expect(d.parse("3月8日").to_date).to eq Date.new(today.year, 3, 8)
+    expect(d.parse("1月3日").to_date).to eq Date.new(today.year, 1, 3)
+  end
+
   it "can be formatted in string" do
     d = Wareki::Date.new("天和", 3, 5, 4, true)
     expect(d.strftime).to eq "天和三年閏五月四日"
