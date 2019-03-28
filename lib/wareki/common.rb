@@ -31,7 +31,7 @@ module Wareki
     (?:(?<is_leap>閏|潤|うるう)?
       (?:(?<month>[正#{NUM_CHARS}]+)月 |
          (?<alt_month>#{ALT_MONTH_NAME.join('|')})))?
-    (?:(?<day>[元朔晦#{NUM_CHARS}]+)日)?
+    (?:(?<day>[元朔晦#{NUM_CHARS}]+)日|元旦)?
   $}x.freeze
 
   class UnsupportedDateRange < StandardError; end
