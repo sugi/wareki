@@ -8,4 +8,8 @@ describe Wareki do
 
     expect(Wareki.parse_to_date "10").to be_a(Date) # Wierd ruby default behaviour...
   end
+
+  it "has a version number" do
+    expect(Wareki::VERSION).not_to be nil
+  end
 end
