@@ -18,6 +18,12 @@ describe Wareki::Kansuji do
     expect(u.kan_to_i("捌萬貳拾")).to eq 80020
     expect(u.kan_to_i("伍〇")).to eq 50
     expect(u.kan_to_i("000023")).to eq 23
+    expect(u.kan_to_i("一千〇二十四")).to eq 1024
+    expect(u.kan_to_i("二百二十二万零三百零二")).to eq 2220302
+    expect(u.kan_to_i("六百〇八")).to eq 608
+    expect(u.kan_to_i("六百十")).to eq 610
+    expect(u.kan_to_i("千〇〇三")).to eq 1003
+    expect(u.kan_to_i("千〇十")).to eq 1010
   end
 
   it "converts kansuji to integer with k2i" do
