@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Wareki
   # Utilities of kansuji/integer converter.
   module Kansuji

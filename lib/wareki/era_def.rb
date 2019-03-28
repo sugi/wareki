@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # coding: utf-8
 module Wareki
   DAY_MAX = 1684383730585466947585

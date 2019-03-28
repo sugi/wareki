@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Wareki
   Year = Struct.new(:year, :start, :end, :leap_month, :month_starts, :month_days)
   YEAR_DEFS = [

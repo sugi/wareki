@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Wareki
   # Static utility methods.
   module Utils

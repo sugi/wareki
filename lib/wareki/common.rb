@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'wareki/calendar_def'
 require 'wareki/era_def'
 require 'date'
