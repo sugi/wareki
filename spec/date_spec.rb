@@ -145,6 +145,7 @@ describe Wareki::Date do
     expect(d.parse("紀元前4年7月").to_date).to eq Date.new(-4, 7, 1)
     expect(d.parse("紀元前9876年4月2日").to_date).to eq Date.new(-9876, 4, 2)
     expect(d.parse("明治5年12月2日").to_date).to eq Date.new(1872, 12, 31)
+    expect(d.parse("令和元年5月2日").to_date).to eq Date.new(2019, 5, 2)
 
     expect { d.parse("謎元号100年2月3日") }.to raise_error(ArgumentError)
     expect { d.parse("昭和2月3日") }.to raise_error(ArgumentError)
