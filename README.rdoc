@@ -1,4 +1,4 @@
-= ruby 和暦ライブラリ
+= wareki - ruby 和暦ライブラリ
 
 {<img src="https://badge.fury.io/rb/wareki.svg" alt="Gem Version" />}[https://badge.fury.io/rb/wareki]
 {<img src="https://travis-ci.org/sugi/wareki.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/sugi/wareki]
