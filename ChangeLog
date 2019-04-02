@@ -3,6 +3,7 @@
 	* Version: 0.4.0
 	* Add new era "令和"
 	* Support parse without year (#8)
+	* Add support for "元旦"
 
 2018-11-09  Tatsuki Sugiura  <sugi@nemui.org>
 
