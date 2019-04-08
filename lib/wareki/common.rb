@@ -19,7 +19,7 @@ module Wareki
     alt_era_name == era_name and next
     ERA_BY_NAME[alt_era_name] = ERA_BY_NAME[era_name]
   end
-  {'㍾' => '明治', '㍽' => '大正', '㍼' => '昭和', '㍻' => '平成'}.each do |short, canon|
+  {'㍾' => '明治', '㍽' => '大正', '㍼' => '昭和', '㍻' => '平成', '㋿' => '令和'}.each do |short, canon|
     ERA_BY_NAME[short] = ERA_BY_NAME[canon]
   end
   ERA_BY_NAME.freeze
