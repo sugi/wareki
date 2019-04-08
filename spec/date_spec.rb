@@ -163,6 +163,10 @@ describe Wareki::Date do
     expect(d.parse("\t\n　1 9 2 8 年 3 月　１１ 日  ").to_date).to eq exd
   end
 
+  it "raise ArgumentError on parse empty string" do
+    expect { Date.parse('') }.to raise_error(ArgumentError)
+  end
+
   it "can parse date string without year" do
     today = Date.today
     d = Wareki::Date
