@@ -1,9 +1,17 @@
+2019-04-08  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version: 0.4.1
+	* Raise ArgumentError for empty string (regression on 0.4.0).
+	  (Thanks to Katsusuke Shimizu @katsusuke)
+
 2019-04-01  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version: 0.4.0
-	* Add new era "令和"
-	* Support parse without year (#8)
+	* Add new era definition for "令和"
+	* Support parse without year (#9)
+	  (Thanks to a report report from @ryooo)
 	* Add support for "元旦"
+	* Provide Wareki::VERSION
 
 2018-11-09  Tatsuki Sugiura  <sugi@nemui.org>
 
