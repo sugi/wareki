@@ -134,6 +134,8 @@ describe Wareki::Date do
     expect(d.parse("慶應元年八月二十四日").to_date).to eq Date.new(1865, 10, 1, Date::JULIAN).new_start(Date::ITALY)
     expect(d.parse("平成元年元日").to_date).to eq Date.new(1989, 1, 1)
     expect(d.parse("平成12年十二月晦日").to_date).to eq Date.new(2000, 12, 31)
+    expect(d.parse("平成12年2月晦日").to_date).to eq Date.new(2000, 2, 29)
+    expect(d.parse("平成13年2月晦日").to_date).to eq Date.new(2001, 2, 28)
 
     expect(d.parse("10年5月3日").to_date).to eq Date.new(10, 5, 3)
     expect(d.parse("321年").to_date).to eq Date.new(321, 1, 1)
