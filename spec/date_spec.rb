@@ -211,6 +211,12 @@ describe Wareki::Date do
     expect(Date.parse("1868/1/24").strftime('%JF')).to eq "慶応三年十二月三十日"
   end
 
+  it "can create date with imperial year" do
+    d = Wareki::Date.imperial 2670, 8, 3
+    expect(d).to eq Wareki::Date.parse("皇紀2670年8月3日")
+    expect(d.to_date).to eq Date.new(2010, 8, 3)
+  end
+
   it "can parse short era name" do
     {'㍾' => '明治', '㍽' => '大正', '㍼' => '昭和', '㍻' => '平成'}.each do |short, canon|
       expect(Date.parse("#{short}十年３月9日").strftime('%Jf')).to eq "#{canon}10年3月9日"
