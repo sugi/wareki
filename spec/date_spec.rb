@@ -214,4 +214,8 @@ describe Wareki::Date do
       expect(Date.parse("#{short}十年３月9日").strftime('%Jf')).to eq "#{canon}10年3月9日"
     end
   end
+
+  it "can parse U+F9A8 variant" do
+    expect(Date.parse("令和3年5月4日")).to eq Date.parse("令和3年5月4日")
+  end
 end
