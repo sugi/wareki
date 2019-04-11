@@ -78,7 +78,7 @@ Gemfile に以下のようにするか、
  d.strftime("%Jf")              # => "安政7年3月17日" (日本の旧暦)
  d.strftime("皇紀%Ji年%Jm月%Jd日") # => "皇紀2520年3月17日" (日本の旧暦で神武天皇即位紀元年)
 
- === Rails I18n から使う場合
+=== Rails I18n から使う場合
 
 strftime が拡張されるので、 `config/locale/ja.yml` にそのままフォーマット文字列が指定できます。例えば
 
