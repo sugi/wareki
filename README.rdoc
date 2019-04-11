@@ -78,6 +78,33 @@ Gemfile に以下のようにするか、
  d.strftime("%Jf")              # => "安政7年3月17日" (日本の旧暦)
  d.strftime("皇紀%Ji年%Jm月%Jd日") # => "皇紀2520年3月17日" (日本の旧暦で神武天皇即位紀元年)
 
+ === Rails I18n から使う場合
+
+strftime が拡張されるので、 `config/locale/ja.yml` にそのままフォーマット文字列が指定できます。例えば
+
+```yaml
+ja:
+  date:
+    formats:
+      default: "%JF"
+```
+
+の様にすると、 I18n.l (I18n.localize) の出力が標準で日本語になります。
+使い分けたい場合は例えば、
+
+```yaml
+ja:
+  date:
+    formats:
+     ja_kan: "%JF"
+```
+
+の様に別のフォーマットキーを設定して、以下のように呼び出し時に指定します。
+
+```erb
+<%= I18n.l Date.today, format: :ja_kan %>
+```
+
 == 追加フォーマット文字列一覧
 
 * %Jf: "%Je%Jg年%Js%Jl月%Jd日" の略 (例: 平成23年3月12日)
