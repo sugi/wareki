@@ -15,7 +15,7 @@ module Wareki
   ERA_BY_NAME['皇紀'] = ERA_BY_NAME['神武天皇即位紀元'] = Era.new('皇紀', -660, 1_480_041, DATE_INFINITY.jd)
   ERA_BY_NAME['西暦'] = ERA_BY_NAME[''] = Era.new('西暦', 1, 1_721_424, DATE_INFINITY.jd)
   ERA_BY_NAME.keys.each do |era_name|
-    alt_era_name = era_name.tr('宝霊神応暦祥寿斎観寛徳禄万福禎国亀', '寳靈神應曆祥壽斉觀寬德祿萬福禎國龜')
+    alt_era_name = era_name.tr('宝霊神応暦祥寿斎観寛徳禄万福禎国亀令', '寳靈神應曆祥壽斉觀寬德祿萬福禎國龜令')
     alt_era_name == era_name and next
     ERA_BY_NAME[alt_era_name] = ERA_BY_NAME[era_name]
   end

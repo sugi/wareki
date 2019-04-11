@@ -134,6 +134,8 @@ describe Wareki::Date do
     expect(d.parse("慶應元年八月二十四日").to_date).to eq Date.new(1865, 10, 1, Date::JULIAN).new_start(Date::ITALY)
     expect(d.parse("平成元年元日").to_date).to eq Date.new(1989, 1, 1)
     expect(d.parse("平成12年十二月晦日").to_date).to eq Date.new(2000, 12, 31)
+    expect(d.parse("平成12年2月晦日").to_date).to eq Date.new(2000, 2, 29)
+    expect(d.parse("平成13年2月晦日").to_date).to eq Date.new(2001, 2, 28)
 
     expect(d.parse("10年5月3日").to_date).to eq Date.new(10, 5, 3)
     expect(d.parse("321年").to_date).to eq Date.new(321, 1, 1)
@@ -209,9 +211,19 @@ describe Wareki::Date do
     expect(Date.parse("1868/1/24").strftime('%JF')).to eq "慶応三年十二月三十日"
   end
 
+  it "can create date with imperial year" do
+    d = Wareki::Date.imperial 2670, 8, 3
+    expect(d).to eq Wareki::Date.parse("皇紀2670年8月3日")
+    expect(d.to_date).to eq Date.new(2010, 8, 3)
+  end
+
   it "can parse short era name" do
     {'㍾' => '明治', '㍽' => '大正', '㍼' => '昭和', '㍻' => '平成'}.each do |short, canon|
       expect(Date.parse("#{short}十年３月9日").strftime('%Jf')).to eq "#{canon}10年3月9日"
     end
+  end
+
+  it "can parse U+F9A8 variant" do
+    expect(Date.parse("令和3年5月4日")).to eq Date.parse("令和3年5月4日")
   end
 end
