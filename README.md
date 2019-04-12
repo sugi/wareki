@@ -101,8 +101,8 @@ strftime が拡張されるので、 `config/locale/ja.yml` にそのままフ�
         default: "%JF"
 ```
 
-の様にすると、 I18n.l (I18n.localize) の出力が標準で日本語になります。
-使い分けたい場合は例えば、
+の様にすると、 I18n.l (I18n.localize) の出力が標準で和暦日本語になります。
+標準は変更せず、特定の箇所で使い分けたい場合は、例えば、
 
 ```yaml
   ja:
@@ -111,7 +111,7 @@ strftime が拡張されるので、 `config/locale/ja.yml` にそのままフ�
         ja_kan: "%JF"
 ```
 
-の様に別のフォーマットキーを設定して、以下のように呼び出し時に指定します。
+の様に別のフォーマットキーを設定して、以下のように呼び出し時に `format` に指定します。
 
 ```erb
   <%= I18n.l Date.today, format: :ja_kan %>
