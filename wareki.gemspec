@@ -16,7 +16,7 @@ formatting, and bi-directional convertion with standard Date class.
   spec.homepage      = 'https://github.com/sugi/wareki'
   spec.license       = 'BSD'
 
-  spec.files         = Dir['lib/**/*.rb'] + %w(LICENSE README.rdoc ChangeLog)
+  spec.files         = Dir['lib/**/*.rb'] + %w(LICENSE README.md ChangeLog)
   # spec.bindir        = "exe"
   # spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
