@@ -15,3 +15,4 @@ rvm:
   - ruby-head
 before_install:
   - type bundle || gem install bundler
+  - gem install --pre ya_kansuji # TODO: remove
