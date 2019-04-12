@@ -95,5 +95,30 @@ module Wareki
       end
       nil
     end
+
+    def i2z(num)
+      num.to_s.tr('0123456789', '０１２３４５６７８９')
+    end
+
+    def k2i(str)
+      str = str.to_s.strip
+      if %w(正 元 朔).member? str
+        1
+      else
+        YaKansuji.to_i str
+      end
+    end
+
+    # DEPRECATED
+    def kan_to_i(*args)
+      warn '[DEPRECATED] Wareki::Utils#kan_to_i: Please use ya_kansuji gem to handle kansuji'
+      k2i(*args)
+    end
+
+    # DEPRECATED
+    def i_to_kan(*args)
+      warn '[DEPRECATED] Wareki::Utils#i_to_kan: Please use ya_kansuji gem to handle kansuji'
+      i2k(*args)
+    end
   end
 end
