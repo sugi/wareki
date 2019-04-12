@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gemspec
-gem 'coveralls'
+gem 'coveralls', require: false
 gem 'rake-hooks'
 gem 'rubocop', require: false
 gem 'travis'

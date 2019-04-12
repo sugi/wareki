@@ -2,11 +2,9 @@
 $:.unshift File.dirname(__FILE__)+'/../lib'
 
 unless defined? JRUBY_VERSION
-  require 'coveralls'
-  Coveralls.wear!
-
   require 'simplecov'
   require 'coveralls'
+  Coveralls.wear!
 
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter,
