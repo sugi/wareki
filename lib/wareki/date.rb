@@ -170,31 +170,31 @@ module Wareki
       when :e  then era_name
       when :g  then era_name.to_s == '' ? '' : era_year
       when :G  then era_name.to_s == '' ? '' : Utils.i2z(era_year)
-      when :Gk then era_name.to_s == '' ? '' : YaKansuji.to_kan(era_year)
+      when :Gk then era_name.to_s == '' ? '' : YaKansuji.to_kan(era_year, :simple)
       when :GK
         if era_name.to_s == ''
           ''
         elsif era_year == 1
           '元'
         else
-          YaKansuji.to_kan(era_year)
+          YaKansuji.to_kan(era_year, :simple)
         end
       when :o  then year
       when :O  then Utils.i2z(year)
-      when :Ok then YaKansuji.to_kan(year)
+      when :Ok then YaKansuji.to_kan(year, :simple)
       when :i  then imperial_year
       when :I  then Utils.i2z(imperial_year)
-      when :Ik then YaKansuji.to_kan(imperial_year)
+      when :Ik then YaKansuji.to_kan(imperial_year, :simple)
       when :s  then month
       when :S  then Utils.i2z(month)
-      when :Sk then YaKansuji.to_kan(month)
+      when :Sk then YaKansuji.to_kan(month, :simple)
       when :SK then Utils.alt_month_name(month)
       when :l  then leap_month? ? "'" : ''
       when :L  then leap_month? ? '’' : ''
       when :Lk then leap_month? ? '閏' : ''
       when :d  then day
       when :D  then Utils.i2z(day)
-      when :Dk then YaKansuji.to_kan(day)
+      when :Dk then YaKansuji.to_kan(day, :simple)
       when :DK
         if month == 1 && !leap_month? && day == 1
           '元'
@@ -203,7 +203,7 @@ module Wareki
         elsif day == Utils.last_day_of_month(year, month, leap_month?)
           '晦'
         else
-          YaKansuji.to_kan(day)
+          YaKansuji.to_kan(day, :simple)
         end
       when :m  then "#{format(:s)}#{format(:l)}"
       when :M  then "#{format(:Lk)}#{format(:S)}"
