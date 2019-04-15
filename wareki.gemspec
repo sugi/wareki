@@ -21,7 +21,7 @@ formatting, and bi-directional convertion with standard Date class.
   # spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'ya_kansuji', '> 0.0.9'
+  spec.add_dependency 'ya_kansuji', '> 0.0.9', '< 2.0.0'
 
   spec.required_ruby_version = '>= 2.0.0'
   if RUBY_VERSION >= '2.1.0' && !defined?(JRUBY_VERSION)

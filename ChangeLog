@@ -1,3 +1,10 @@
+2019-04-15  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Verion: 1.0.0 🎉, compat with 0.x mostly.
+	* Split kansuji handling to 'ya_kansuji' gem
+	* Deprecate Wareki::Kansuji module
+	* Revert Utils.kan_to_i and Utils.i_to_kan as deprecated
+
 2019-04-11  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version: 0.4.2
