@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ya_kansuji'
+
 module Wareki
   # Static utility methods.
   module Utils
