@@ -10,17 +10,18 @@ module Wareki
 
     # DEPRECATED
     def kan_to_i(str)
-      warn '[DEPRECATED] Wareki::Kansuji#kan_to_i: Please use ya_kansuji gem to handle kansuji'
+      warn '[DEPRECATED] Wareki::Kansuji.kan_to_i: Please use ya_kansuji gem to handle kansuji'
       Utils.k2i str
     end
 
     # DEPRECATED
     def i_to_kan(num)
-      warn '[DEPRECATED] Wareki::Kansuji#i_to_kan: Please use ya_kansuji gem to handle kasuji'
+      warn '[DEPRECATED] Wareki::Kansuji.i_to_kan: Please use ya_kansuji gem to handle kasuji'
       YaKansuji.to_kan num
     end
 
     def i_to_zen(num)
+      warn '[DEPRECATED] Wareki::Kansuji.i_to_zen: Use Wareki::Utils.i2z'
       Utils.i2z num
     end
 

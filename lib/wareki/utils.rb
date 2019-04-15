@@ -111,13 +111,13 @@ module Wareki
 
     # DEPRECATED
     def kan_to_i(*args)
-      warn '[DEPRECATED] Wareki::Utils#kan_to_i: Please use ya_kansuji gem to handle kansuji'
+      warn '[DEPRECATED] Wareki::Utils.kan_to_i: Please use ya_kansuji gem to handle kansuji'
       k2i(*args)
     end
 
     # DEPRECATED
     def i_to_kan(*args)
-      warn '[DEPRECATED] Wareki::Utils#i_to_kan: Please use ya_kansuji gem to handle kansuji'
+      warn '[DEPRECATED] Wareki::Utils.i_to_kan: Please use ya_kansuji gem to handle kansuji'
       i2k(*args)
     end
   end
