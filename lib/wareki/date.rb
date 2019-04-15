@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'date'
+require 'ya_kansuji'
 require 'wareki/common'
 require 'wareki/utils'
 require 'wareki/kansuji'
@@ -31,7 +32,7 @@ module Wareki
       if (era.nil? || era == '') && match[:year].nil?
         year = Date.today.year
       else
-        (year = Kansuji.k2i(match[:year])) > 0 or
+        (year = Utils.k2i(match[:year])) > 0 or
           raise ArgumentError, "Invalid year: #{str}"
       end
       month = day = 1
@@ -40,7 +41,7 @@ module Wareki
         raise ArgumentError, "Date parse failed: Invalid era name '#{match[:era_name]}'"
 
       if match[:month]
-        month = Kansuji.k2i(match[:month])
+        month = Utils.k2i(match[:month])
       elsif match[:alt_month]
         month = Utils.alt_month_name_to_i(match[:alt_month])
       end
@@ -52,7 +53,7 @@ module Wareki
         if match[:day] == '晦'
           day = Utils.last_day_of_month(ERA_BY_NAME[era].year + year - 1, month, match[:is_leap])
         else
-          day = Kansuji.k2i(match[:day])
+          day = Utils.k2i(match[:day])
         end
       end
 
@@ -168,32 +169,32 @@ module Wareki
       case key.to_sym
       when :e  then era_name
       when :g  then era_name.to_s == '' ? '' : era_year
-      when :G  then era_name.to_s == '' ? '' : Kansuji.i2z(era_year)
-      when :Gk then era_name.to_s == '' ? '' : Kansuji.i2k(era_year)
+      when :G  then era_name.to_s == '' ? '' : Utils.i2z(era_year)
+      when :Gk then era_name.to_s == '' ? '' : YaKansuji.to_kan(era_year, :simple)
       when :GK
         if era_name.to_s == ''
           ''
         elsif era_year == 1
           '元'
         else
-          Kansuji.i2k(era_year)
+          YaKansuji.to_kan(era_year, :simple)
         end
       when :o  then year
-      when :O  then Kansuji.i2z(year)
-      when :Ok then Kansuji.i2k(year)
+      when :O  then Utils.i2z(year)
+      when :Ok then YaKansuji.to_kan(year, :simple)
       when :i  then imperial_year
-      when :I  then Kansuji.i2z(imperial_year)
-      when :Ik then Kansuji.i2k(imperial_year)
+      when :I  then Utils.i2z(imperial_year)
+      when :Ik then YaKansuji.to_kan(imperial_year, :simple)
       when :s  then month
-      when :S  then Kansuji.i2z(month)
-      when :Sk then Kansuji.i2k(month)
+      when :S  then Utils.i2z(month)
+      when :Sk then YaKansuji.to_kan(month, :simple)
       when :SK then Utils.alt_month_name(month)
       when :l  then leap_month? ? "'" : ''
       when :L  then leap_month? ? '’' : ''
       when :Lk then leap_month? ? '閏' : ''
       when :d  then day
-      when :D  then Kansuji.i2z(day)
-      when :Dk then Kansuji.i2k(day)
+      when :D  then Utils.i2z(day)
+      when :Dk then YaKansuji.to_kan(day, :simple)
       when :DK
         if month == 1 && !leap_month? && day == 1
           '元'
@@ -202,7 +203,7 @@ module Wareki
         elsif day == Utils.last_day_of_month(year, month, leap_month?)
           '晦'
         else
-          Kansuji.i2k(day)
+          YaKansuji.to_kan(day, :simple)
         end
       when :m  then "#{format(:s)}#{format(:l)}"
       when :M  then "#{format(:Lk)}#{format(:S)}"

@@ -60,4 +60,3 @@ Style/ConditionalAssignment:
 Metrics/BlockLength:
   ExcludedMethods:
     - each_char # for Kansuji.kan_to_i...
-
