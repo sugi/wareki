@@ -4,6 +4,7 @@
 [<img src="https://travis-ci.org/sugi/wareki.svg?branch=master" alt="Build Status" />](https://travis-ci.org/sugi/wareki)
 [<img src="https://coveralls.io/repos/sugi/wareki/badge.svg?branch=master&service=github" alt="Coverage Status" />](https://coveralls.io/github/sugi/wareki?branch=master)
 [<img src="https://api.codeclimate.com/v1/badges/c9209422700b526d2b45/maintainability" />](https://codeclimate.com/github/sugi/wareki/maintainability)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9242ddf1725c404aac2d9f82b9bc1d75)](https://www.codacy.com/app/sugi/wareki?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sugi/wareki&amp;utm_campaign=Badge_Grade)
 
 ## 概要
 
