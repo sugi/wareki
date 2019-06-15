@@ -83,10 +83,10 @@ describe Wareki::Date do
 
   it "can be calclated with number" do
     w = Wareki::Date.parse("平成7年11月10日")
-    expect((w + 1).strftime("%Jf")).to eq "平成7年11月11日"
-    expect((w - 1).strftime("%Jf")).to eq "平成7年11月9日"
-    expect((w - 10).strftime("%Jf")).to eq "平成7年10月31日"
-    expect((w + 21).strftime("%Jf")).to eq "平成7年12月1日"
+    expect((w + 1).strftime("%Jf")).to eq "平成07年11月11日"
+    expect((w - 1).strftime("%Jf")).to eq "平成07年11月09日"
+    expect((w - 10).strftime("%Jf")).to eq "平成07年10月31日"
+    expect((w + 21).strftime("%Jf")).to eq "平成07年12月01日"
 
     w = Wareki::Date.today
     expect(w + 1 === Date.today + 1).to eq true
@@ -183,13 +183,24 @@ describe Wareki::Date do
     d = Wareki::Date.new("天和", 3, 5, 4, true)
     expect(d.strftime).to eq "天和三年閏五月四日"
     expect(d.strftime("%JF")).to eq "天和三年閏五月四日"
-    expect(d.strftime("%Jf")).to eq "天和3年5'月4日"
+    expect(d.strftime("%Jf")).to eq "天和03年05'月04日"
     expect(d.strftime("%Jo %JO %JOk")).to eq "1683 １６８３ 千六百八十三"
     expect(d.strftime("%Ji %JI %JIk")).to eq "2343 ２３４３ 二千三百四十三"
-    expect(d.strftime("%Jd %JD %JDk")).to eq "4 ４ 四"
-    expect(d.strftime("%Jm %JM %JMk")).to eq "5' 閏５ 閏五"
-    expect(d.strftime("%Jy %JY %JYk")).to eq "天和3 天和３ 天和三"
-    expect(d.strftime("皇紀で%Ji年%Jm月%Jd日")).to eq "皇紀で2343年5'月4日"
+    expect(d.strftime("%Jd %JD %JDk")).to eq "04 ４ 四"
+    expect(d.strftime("%Jm %JM %JMk")).to eq "05' 閏５ 閏五"
+    expect(d.strftime("%Jy %JY %JYk")).to eq "天和03 天和３ 天和三"
+
+    expect(d.strftime("1桁: %J01f")).to eq "1桁: 天和3年5'月4日"
+    expect(d.strftime("1桁: %J01y %J01m %J01d")).to eq "1桁: 天和3 5' 4"
+    expect(d.strftime("1桁: %J01g %J01s")).to eq "1桁: 3 5"
+    expect(d.strftime("空白2桁: %J_2f")).to eq "空白2桁: 天和 3年 5'月 4日"
+    expect(d.strftime("空白2桁: %J_2y %J_2m %J_2d")).to eq "空白2桁: 天和 3  5'  4"
+    expect(d.strftime("空白2桁: %J_2g %J_2s")).to eq "空白2桁:  3  5"
+    expect(d.strftime("0埋3桁: %J03f")).to eq "0埋3桁: 天和003年005'月004日"
+    expect(d.strftime("0埋3桁: %J03y %J03m %J03d")).to eq "0埋3桁: 天和003 005' 004"
+    expect(d.strftime("0埋3桁: %J03g %J03s")).to eq "0埋3桁: 003 005"
+
+    expect(d.strftime("皇紀で%Ji年%Jm月%Jd日")).to eq "皇紀で2343年05'月04日"
     expect(d.strftime("%JYk年　%JSK")).to eq "天和三年　皐月"
     expect(d.strftime("西暦だと%Y年%m月%d日")).to eq "西暦だと1683年06月28日"
     expect(d.strftime("未定義なやつはそのまま %JeK")).to eq "未定義なやつはそのまま %JeK"
@@ -197,7 +208,7 @@ describe Wareki::Date do
     expect(Wareki::Date.parse("寿永三年 五月 晦日").strftime("%Jd日")).to eq "30日"
     expect(Wareki::Date.parse("寿永2年 3月 晦日").strftime("%Jd日")).to eq "29日"
     expect(Wareki::Date.new("寿永", 2, 3, 29).strftime("%JDK日")).to eq "晦日"
-    expect(Wareki::Date.new("寿永", 1, 2, 1).strftime("%JYK年%Jm月%JDK日")).to eq "寿永元年2月朔日"
+    expect(Wareki::Date.new("寿永", 1, 2, 1).strftime("%JYK年%Jm月%JDK日")).to eq "寿永元年02月朔日"
     expect(Wareki::Date.new("寿永", 1, 1, 1).strftime("%JYK年%JM%JL月%JDK日")).to eq "寿永元年１月元日"
   end
 
@@ -219,7 +230,7 @@ describe Wareki::Date do
 
   it "can parse short era name" do
     {'㍾' => '明治', '㍽' => '大正', '㍼' => '昭和', '㍻' => '平成'}.each do |short, canon|
-      expect(Date.parse("#{short}十年３月9日").strftime('%Jf')).to eq "#{canon}10年3月9日"
+      expect(Date.parse("#{short}十年３月9日").strftime('%Jf')).to eq "#{canon}10年03月09日"
     end
   end
 
