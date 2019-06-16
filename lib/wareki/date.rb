@@ -159,18 +159,29 @@ module Wareki
     end
 
     def strftime(format_str = '%JF')
-      ret = format_str.to_str.gsub(/%J(-|[_0]?[0-9]+|)([fFyYegGoOiImMsSlLdD][kK]?)/) { format($2, $1) || $& }
+      ret = format_str.to_str.gsub(/%J(-|[_0]{0,2}[0-9]*|)([fFyYegGoOiImMsSlLdD][kK]?)/) { format($2, $1) || $& }
       ret.index('%') or return ret
       d = to_date
       d.respond_to?(:_wareki_strftime_orig) ? d._wareki_strftime_orig(ret) : d.strftime(ret)
     end
 
-    def format(key, opt = "")
-      sprintf_format = (opt.empty? ? "%02d" : "%#{opt.sub('_', '')}d")
+    def _number_format(opt)
+      case opt
+      when ''    then '%02d'
+      when '-'   then '%d'
+      when '0'   then '%02d'
+      when '_0'  then '%02d'
+      when /_\Z/ then '%2d'
+      when /0?_/ then "\%#{opt.sub(/0?_/, '')}d"
+      when /_?0/ then "\%#{opt.sub(/_?0/, '0')}d"
+      else "\%0#{opt}d"
+      end
+    end
 
+    def format(key, opt = '')
       case key.to_sym
       when :e  then era_name
-      when :g  then era_name.to_s == '' ? '' : (sprintf_format % era_year)
+      when :g  then era_name.to_s == '' ? '' : Kernel.format(_number_format(opt), era_year)
       when :G  then era_name.to_s == '' ? '' : Utils.i2z(era_year)
       when :Gk then era_name.to_s == '' ? '' : YaKansuji.to_kan(era_year, :simple)
       when :GK
@@ -187,14 +198,14 @@ module Wareki
       when :i  then imperial_year
       when :I  then Utils.i2z(imperial_year)
       when :Ik then YaKansuji.to_kan(imperial_year, :simple)
-      when :s  then (sprintf_format % month)
+      when :s  then Kernel.format(_number_format(opt), month)
       when :S  then Utils.i2z(month)
       when :Sk then YaKansuji.to_kan(month, :simple)
       when :SK then Utils.alt_month_name(month)
       when :l  then leap_month? ? "'" : ''
       when :L  then leap_month? ? '’' : ''
       when :Lk then leap_month? ? '閏' : ''
-      when :d  then (sprintf_format % day)
+      when :d  then Kernel.format(_number_format(opt), day)
       when :D  then Utils.i2z(day)
       when :Dk then YaKansuji.to_kan(day, :simple)
       when :DK

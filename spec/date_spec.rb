@@ -190,15 +190,18 @@ describe Wareki::Date do
     expect(d.strftime("%Jm %JM %JMk")).to eq "05' 閏５ 閏五"
     expect(d.strftime("%Jy %JY %JYk")).to eq "天和03 天和３ 天和三"
 
-    expect(d.strftime("1桁: %J01f")).to eq "1桁: 天和3年5'月4日"
-    expect(d.strftime("1桁: %J01y %J01m %J01d")).to eq "1桁: 天和3 5' 4"
-    expect(d.strftime("1桁: %J01g %J01s")).to eq "1桁: 3 5"
+    expect(d.strftime("1桁: %J1f")).to eq "1桁: 天和3年5'月4日"
+    expect(d.strftime("1桁: %J1y %J1m %J1d")).to eq "1桁: 天和3 5' 4"
+    expect(d.strftime("1桁: %J1g %J1s")).to eq "1桁: 3 5"
     expect(d.strftime("空白2桁: %J_2f")).to eq "空白2桁: 天和 3年 5'月 4日"
     expect(d.strftime("空白2桁: %J_2y %J_2m %J_2d")).to eq "空白2桁: 天和 3  5'  4"
     expect(d.strftime("空白2桁: %J_2g %J_2s")).to eq "空白2桁:  3  5"
     expect(d.strftime("0埋3桁: %J03f")).to eq "0埋3桁: 天和003年005'月004日"
     expect(d.strftime("0埋3桁: %J03y %J03m %J03d")).to eq "0埋3桁: 天和003 005' 004"
     expect(d.strftime("0埋3桁: %J03g %J03s")).to eq "0埋3桁: 003 005"
+    expect(d.strftime("0埋4桁: %J4f")).to eq "0埋4桁: 天和0003年0005'月0004日"
+    expect(d.strftime("0埋4桁: %J4y %J4m %J4d")).to eq "0埋4桁: 天和0003 0005' 0004"
+    expect(d.strftime("0埋4桁: %J4g %J4s")).to eq "0埋4桁: 0003 0005"
 
     expect(d.strftime("皇紀で%Ji年%Jm月%Jd日")).to eq "皇紀で2343年05'月04日"
     expect(d.strftime("%JYk年　%JSK")).to eq "天和三年　皐月"
@@ -210,6 +213,26 @@ describe Wareki::Date do
     expect(Wareki::Date.new("寿永", 2, 3, 29).strftime("%JDK日")).to eq "晦日"
     expect(Wareki::Date.new("寿永", 1, 2, 1).strftime("%JYK年%Jm月%JDK日")).to eq "寿永元年02月朔日"
     expect(Wareki::Date.new("寿永", 1, 1, 1).strftime("%JYK年%JM%JL月%JDK日")).to eq "寿永元年１月元日"
+  end
+
+  it "can be formatted having compatibility with standard Date#strftime" do
+    wareki_date = Wareki::Date.new("令和", 1, 5, 4)
+    date = ::Date.new(2019, 5, 4)
+
+    expect(wareki_date.strftime("%Jm %Jd")).to eq date.strftime("%m %d")
+    expect(wareki_date.strftime("%J-m %J-d")).to eq date.strftime("%-m %-d")
+
+    expect(wareki_date.strftime("%J_m %J_d")).to eq date.strftime("%_m %_d")
+    expect(wareki_date.strftime("%J_2m %J_2d")).to eq date.strftime("%_2m %_2d")
+    expect(wareki_date.strftime("%J03m %J03d")).to eq date.strftime("%03m %03d")
+    expect(wareki_date.strftime("%J4m %J4d")).to eq date.strftime("%4m %4d")
+
+    expect(wareki_date.strftime("%J0_5m %J0_5d")).to eq date.strftime("%0_5m %0_5d")
+    expect(wareki_date.strftime("%J_06m %J_06d")).to eq date.strftime("%_06m %_06d")
+
+    expect(wareki_date.strftime("%J0m %J0d")).to eq date.strftime("%0m %0d")
+    expect(wareki_date.strftime("%J0_m %J0_d")).to eq date.strftime("%0_m %0_d")
+    expect(wareki_date.strftime("%J_0m %J_0d")).to eq date.strftime("%_0m %_0d")
   end
 
   it "can handle last days of era" do
