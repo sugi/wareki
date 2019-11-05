@@ -26,7 +26,8 @@ module Wareki
 
     def self._parse(str)
       str = str.to_s.gsub(/[[:space:]]/, '')
-      match = (!str.empty? && REGEX.match(str)) or
+      match = REGEX.match(str)
+      match && !match[0].empty? or
         raise ArgumentError, "Invaild Date: #{str}"
       era = match[:era_name]
       if (era.nil? || era == '') && match[:year].nil?
