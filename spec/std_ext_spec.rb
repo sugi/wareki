@@ -16,6 +16,7 @@ describe Wareki::StdExt do
   it "overrides _parse" do
     expect(Date._parse("平成元年5月4日")).to eq({ year: 1989, mon: 5, mday: 4 })
     expect(Date._parse("平成元年5月4日12:34:56")).to eq({ year: 1989, mon: 5, mday: 4, hour: 12, min: 34, sec: 56 })
+    expect(Date._parse("completely invalid date")).to eq({})
   end
 
   it "have Date::JAPAN" do
