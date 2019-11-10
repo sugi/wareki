@@ -6,7 +6,7 @@ describe Wareki::StdExt do
   end
 
   it "overrides parse" do
-    expect(Date.parse()).to eq Date.new(-4712, 1, 1)
+    expect(Date.parse()).to eq Date._wareki_parse_orig()
     expect(Date.parse("平成 二十七年 八月 朔日")).to eq Date.new(2015, 8, 1)
     expect(Date.parse("2015-08-01")).to eq Date.new(2015, 8, 1)
     expect {
