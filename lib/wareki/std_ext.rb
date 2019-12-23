@@ -29,5 +29,15 @@ class Date
     rescue ArgumentError, Wareki::UnsupportedDateRange
       ::Date._wareki_parse_orig(str, comp, start)
     end
+
+    alias _wareki__parse_orig _parse
+    def _parse(str, comp = true)
+      di = Wareki::Date._parse(str)
+      wdate = Wareki::Date.new(di[:era], di[:year], di[:month], di[:day], di[:is_leap])
+    rescue ArgumentError, Wareki::UnsupportedDateRange
+      ::Date._wareki__parse_orig(str, comp)
+    else
+      ::Date._wareki__parse_orig(str.sub(Wareki::REGEX, wdate.strftime('%F ')), comp)
+    end
   end
 end
