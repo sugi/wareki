@@ -1,3 +1,13 @@
+2019-12-24  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version: 1.1.0
+
+	[ by Akinori MUSHA <knu@idaemons.org> ]
+	* Partially traditional kanji variants support
+	* Compatibility fix: Date.parse with no arguement
+	* Provides Date._parse overrides (currently no kansuji
+	  support for time fields at present)
+
 2019-04-15  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Verion: 1.0.0 🎉, compat with 0.x mostly.
