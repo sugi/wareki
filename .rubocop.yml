@@ -12,6 +12,13 @@ Gemspec/RequiredRubyVersion:
   Exclude:
     - 'wareki.gemspec' # Required to support 2.0
 
+Style/NumericPredicate:
+  EnforcedStyle: comparison # For ruby < 2.3
+
+Gemspec/RubyVersionGlobalsUsage:
+  Exclude:
+    - wareki.gemspec
+
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
@@ -30,10 +37,10 @@ Style/PercentLiteralDelimiters:
 Style/RegexpLiteral:
   EnforcedStyle: mixed
 
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   AllowedNames: jd, d, v
 
-Layout/IndentHeredoc:
+Layout/HeredocIndentation:
   Enabled: false # Disable for ruby 2.0...
 
 Metrics/LineLength:
