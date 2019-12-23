@@ -52,7 +52,7 @@ module Wareki
       KANJI_VARIANTS.each_with_object({}) { |(canon, variants), h| h[canon] = "[#{canon}#{variants}]" }
     )
   )
-  NUM_CHARS = '零壱壹弌弐貳貮参參弎肆伍陸漆質柒捌玖〇一二三四五六七八九十拾什卄廿卅丗卌百陌佰皕阡仟千万萬億兆京垓0123456789０１２３４５６７８９'.freeze
+  NUM_CHARS = '零壱壹弌弐貳貮参參弎肆伍陸漆質柒捌玖〇一二三四五六七八九十拾什卄廿卅丗卌百陌佰皕阡仟千万萬億兆京垓0123456789０１２３４５６７８９'
   ALT_MONTH_NAME = %w(睦月 如月 弥生 卯月 皐月 水無月 文月 葉月 長月 神無月 霜月 師走).freeze
   REGEX = %r{
     (?:(?<era_name>紀元前|#{ERA_REGEX})?
