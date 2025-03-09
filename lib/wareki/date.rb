@@ -33,8 +33,8 @@ module Wareki
       if (era.nil? || era == '') && match[:year].nil?
         year = Date.today.year
       else
-        (year = Utils.k2i(match[:year])) > 0 or
-          raise ArgumentError, "Invalid year: #{str}"
+        year = Utils.k2i(match[:year])
+        year > 0 or raise ArgumentError, "Invalid year: #{str}"
       end
       month = day = 1
 

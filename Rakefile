@@ -14,8 +14,4 @@ before :build do
   FileUtils.chmod(0o644, spec.files)
 end
 
-if ENV['CI']
-  task default: :spec
-else
-  task default: %i(spec lint)
-end
+task default: ENV['CI'] ? :spec : %i(spec lint)

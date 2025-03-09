@@ -50,7 +50,7 @@ Naming/MethodParameterName:
 Layout/HeredocIndentation:
   Enabled: false # Disable for ruby 2.0...
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 130
 
 Style/DoubleNegation:
@@ -74,3 +74,6 @@ Style/ConditionalAssignment:
 Metrics/BlockLength:
   AllowedMethods:
     - each_char # for Kansuji.kan_to_i...
+
+Style/OptionalBooleanParameter:
+  Enabled: false
