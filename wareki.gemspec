@@ -33,4 +33,5 @@ formatting, and bi-directional convertion with standard Date class.
   end
   spec.add_development_dependency 'rake', '>= 10.0'
   spec.add_development_dependency 'rspec'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -31,7 +31,7 @@ module Wareki
       yobj = YEAR_BY_NUM[year] or
         raise UnsupportedDateRange, "Cannot find year #{inspect}"
       month_idx = month - 1
-      month_idx += 1 if is_leap || yobj.leap_month && yobj.leap_month < month
+      month_idx += 1 if is_leap || (yobj.leap_month && yobj.leap_month < month)
       yobj.month_days[month_idx]
     end
 

@@ -17,9 +17,9 @@ module Wareki
     def self._check_invalid_date(era, year, month, day)
       month == 12 or return true
       day > 2 or return true
-      (era == '明治' && year == 5 ||
-       %w(皇紀 神武天皇即位紀元).member?(era) &&
-       year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1) and
+      ((era == '明治' && year == 5) ||
+       (%w(皇紀 神武天皇即位紀元).member?(era) &&
+       year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1)) and
         return false
       true
     end
@@ -27,7 +27,7 @@ module Wareki
     def self._parse(str)
       str = str.to_s.gsub(/[[:space:]]/, '')
       match = REGEX.match(str)
-      match && !match[0].empty? or
+      (match && !match[0].empty?) or
         raise ArgumentError, "Invaild Date: #{str}"
       era = match[:era_name]
       if (era.nil? || era == '') && match[:year].nil?
@@ -133,7 +133,7 @@ module Wareki
       yobj = YEAR_BY_NUM[@year] or
         raise UnsupportedDateRange, "Cannot get year info of #{inspect}"
       idx = month - 1
-      idx += 1 if leap_month? || yobj.leap_month && month > yobj.leap_month
+      idx += 1 if leap_month? || (yobj.leap_month && month > yobj.leap_month)
       idx
     end
 
@@ -261,7 +261,7 @@ module Wareki
     end
 
     def _to_jd_for_calc(other)
-      other.class.to_s == 'ActiveSupport::Duration' and
+      other.instance_of?(::ActiveSupport::Duration) and
         raise NotImplementedError, 'Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric.'
       other.respond_to?(:to_date) and other = other.to_date
       other.respond_to?(:jd) and other = other.jd

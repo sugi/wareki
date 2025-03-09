@@ -1,12 +1,19 @@
 inherit_from: .rubocop_todo.yml
 
+plugins:
+  - rubocop-performance
+  - rubocop-rspec
+  - rubocop-rake
+
 AllCops:
   AllowSymlinksInCacheRootDirectory: true
+  NewCops: enable
   Exclude:
     - lib/wareki/*_def.rb
     - spec/**/*
     - tmp/**/*
     - build-util/*
+    - vendor/**/*
 
 Gemspec/RequiredRubyVersion:
   Exclude:
@@ -65,5 +72,5 @@ Style/ConditionalAssignment:
 # Configuration parameters: CountComments, ExcludedMethods.
 # ExcludedMethods: refine
 Metrics/BlockLength:
-  ExcludedMethods:
+  AllowedMethods:
     - each_char # for Kansuji.kan_to_i...

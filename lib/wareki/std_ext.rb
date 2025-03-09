@@ -7,6 +7,7 @@ module Wareki
   module StdExt
   end
 end
+
 # :nodoc:
 class Date
   JAPAN = Wareki::GREGORIAN_START
