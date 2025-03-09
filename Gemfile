@@ -12,5 +12,3 @@ gem 'rubocop', require: false
 gem 'rubocop-performance', '~> 1.24', require: false
 gem 'rubocop-rake', '~> 0.7.1', require: false
 gem 'rubocop-rspec', '~> 3.5', require: false
-gem 'travis'
-gem 'travis-lint'
