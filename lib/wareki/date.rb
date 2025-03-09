@@ -259,8 +259,10 @@ module Wareki
     end
 
     def _to_jd_for_calc(other)
-      other.instance_of?(::ActiveSupport::Duration) and
-        raise NotImplementedError, 'Date calcration with ActiveSupport::Duration currently is not supported. Please use numeric.'
+      # rubocop:disable Style/ClassEqualityComparison
+      return other.in_days if other.class.name == 'ActiveSupport::Duration'
+      # rubocop:enable Style/ClassEqualityComparison
+
       other.respond_to?(:to_date) and other = other.to_date
       other.respond_to?(:jd) and other = other.jd
       other

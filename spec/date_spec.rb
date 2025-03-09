@@ -101,17 +101,17 @@ describe Wareki::Date do
     unless defined?(ActiveSupport::Duration)
       module ActiveSupport
         class Duration
-          def self.days(_v)
-            new
+          def self.days(d)
+            @days ||= d
           end
-        end; end; # Dummy...
+          def in_days
+            @days
+          end
+        end
+      end # Dummy...
     end
-    expect do
-      described_class.today + ActiveSupport::Duration.days(3)
-    end.to raise_error(NotImplementedError)
-    expect do
-      described_class.today - ActiveSupport::Duration.days(3)
-    end.to raise_error(NotImplementedError)
+    expect(described_class.today + ActiveSupport::Duration.days(3)).to eq described_class.today + 3
+    expect(described_class.today - ActiveSupport::Duration.days(3)).to eq described_class.today - 3
   end
 
   it 'raises exception with unsupported date' do
