@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gemspec
 gem 'bundler', '>= 1.9'
 gem 'coveralls_reborn', require: false
+gem 'simplecov-lcov', require: false
 gem 'rake', '>= 10.0'
 gem 'rake-hooks'
 gem 'rspec'
