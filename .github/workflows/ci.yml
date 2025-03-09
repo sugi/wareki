@@ -20,6 +20,16 @@ jobs:
           - '3.3.7'
           - '3.4.2'
           - 'head'
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel-finished: true
 
     steps:
     - uses: actions/checkout@v4
@@ -36,3 +46,6 @@ jobs:
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./coverage/lcov.info
+        flag-name: ruby-${{ matrix.ruby-version }}
+        parallel: true
