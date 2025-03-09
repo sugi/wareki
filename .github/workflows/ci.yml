@@ -19,7 +19,7 @@ jobs:
           - '3.2.7'
           - '3.3.7'
           - '3.4.2'
-          - '3.5-dev'
+          - 'head'
 
     steps:
     - uses: actions/checkout@v4
