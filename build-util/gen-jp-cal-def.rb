@@ -2,6 +2,8 @@
 #
 # Usage: gen-jp-cal-def.rb kyuureki-map.txt > lib/calender_def.rb
 #
+# You can get kyuureki-map.txt from https://raw.githubusercontent.com/manakai/data-locale/master/data/calendar/kyuureki-map.txt
+#
 require 'pp'
 require 'date'
 
@@ -38,6 +40,7 @@ puts "module Wareki"
 puts "  Year = Struct.new(:year, :start, :end, :leap_month, :month_starts, :month_days)"
 puts "  YEAR_DEFS = ["
 calinfo.each do |y, d|
+  y < 445 and next
   puts "    Year.new(#{y}, #{d[:start]}, #{d[:end]}, #{d[:leap].inspect}, #{d[:month_starts].inspect}, #{d[:month_days].inspect}),"
 end
 puts "  ].freeze"
