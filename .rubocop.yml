@@ -10,7 +10,6 @@ AllCops:
   NewCops: enable
   Exclude:
     - lib/wareki/*_def.rb
-    - spec/**/*
     - tmp/**/*
     - build-util/*
     - vendor/**/*
@@ -59,7 +58,7 @@ Style/DoubleNegation:
     - 'lib/wareki/date.rb'
 
 Metrics/ClassLength:
-  Max: 220
+  Max: 250
 
 Metrics/MethodLength:
   Max: 50
@@ -76,4 +75,13 @@ Metrics/BlockLength:
     - each_char # for Kansuji.kan_to_i...
 
 Style/OptionalBooleanParameter:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 35
+
+RSpec/ExampleLength:
+  Max: 40
+
+Style/CaseEquality:
   Enabled: false

@@ -168,14 +168,12 @@ module Wareki
 
     def _number_format(opt)
       case opt
-      when ''    then '%02d'
-      when '-'   then '%d'
-      when '0'   then '%02d'
-      when '_0'  then '%02d'
-      when /_\Z/ then '%2d'
-      when /0?_/ then "\%#{opt.sub(/0?_/, '')}d"
-      when /_?0/ then "\%#{opt.sub(/_?0/, '0')}d"
-      else "\%0#{opt}d"
+      when '', '0', '_0' then '%02d'
+      when '-'           then '%d'
+      when /_\Z/         then '%2d'
+      when /0?_/         then "%#{opt.sub(/0?_/, '')}d"
+      when /_?0/         then "%#{opt.sub(/_?0/, '0')}d"
+      else "%0#{opt}d"
       end
     end
 

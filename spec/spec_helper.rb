@@ -1,5 +1,4 @@
-#
-$:.unshift File.dirname(__FILE__)+'/../lib'
+$LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
 
 unless defined? JRUBY_VERSION
   require 'simplecov'
@@ -7,9 +6,9 @@ unless defined? JRUBY_VERSION
   Coveralls.wear!
 
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-    SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
-  ])
+                                                                   SimpleCov::Formatter::HTMLFormatter,
+                                                                   Coveralls::SimpleCov::Formatter
+                                                                 ])
   SimpleCov.start do
     add_filter 'build-util/'
     add_filter 'spec/'
