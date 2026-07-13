@@ -44,8 +44,8 @@ module Wareki
   NORMALIZE_KANJI_VARIANTS_HASH = KANJI_VARIANTS.each_with_object({}) { |(n, s), h| s.each_char { |c| h[c] = n } }
   NORMALIZE_KANJI_VARIANTS = ->(str) { str.gsub(NORMALIZE_KANJI_VARIANTS_REGEX, NORMALIZE_KANJI_VARIANTS_HASH) }
   ERA_BY_NAME = Hash[*(ERA_NORTH_DEFS + ERA_DEFS).flat_map { |g| [g.name, g] }]
-  ERA_BY_NAME['皇紀'] = ERA_BY_NAME['神武天皇即位紀元'] = Era.new('皇紀', -660, 1_480_041, DATE_INFINITY.jd)
-  ERA_BY_NAME['西暦'] = ERA_BY_NAME[''] = Era.new('西暦', 1, 1_721_424, DATE_INFINITY.jd)
+  ERA_BY_NAME['皇紀'] = ERA_BY_NAME['神武天皇即位紀元'] = Era.new('皇紀', -660, 1_480_041, DATE_INFINITY.jd).freeze
+  ERA_BY_NAME['西暦'] = ERA_BY_NAME[''] = Era.new('西暦', 1, 1_721_424, DATE_INFINITY.jd).freeze
   ERA_BY_NAME.default_proc = ->(hash, key) { hash.fetch(SQUARE_ERAS[key] || NORMALIZE_KANJI_VARIANTS[key], nil) }
   ERA_BY_NAME.freeze
   ERA_REGEX = Regexp.new(
