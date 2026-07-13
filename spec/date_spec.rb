@@ -280,6 +280,8 @@ describe Wareki::Date do
     expect(d.strftime('x%%JF')).to eq 'x%JF'
     expect(d.strftime('%%%JF')).to eq '%天和三年閏五月四日'
     expect(d.strftime('rate: 100%% %JF')).to eq 'rate: 100% 天和三年閏五月四日'
+    expect(d.strftime('%%%%JF')).to eq '%%JF'
+    expect(d.strftime('%%%%%JF')).to eq '%%天和三年閏五月四日'
   end
 
   it 'can be formatted having compatibility with standard Date#strftime' do

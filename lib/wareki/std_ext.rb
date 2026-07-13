@@ -8,7 +8,7 @@ module Wareki
     module_function
 
     def wareki_directive?(format)
-      !!(format.to_str.gsub('%%', '') =~ Wareki::Date::FORMAT_DIRECTIVE_REGEX)
+      !!(format.to_str =~ Wareki::Date::FORMAT_EXPANSION_REGEX)
     end
   end
 end

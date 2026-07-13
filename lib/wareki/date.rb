@@ -200,10 +200,10 @@ module Wareki
     end
 
     FORMAT_DIRECTIVE_REGEX = /%J(-|[_0]{0,2}[0-9]*|)([fFyYegGoOiImMsSlLdD][kK]?)/.freeze
-    FORMAT_EXPANSION_REGEX = /%%|#{FORMAT_DIRECTIVE_REGEX}/.freeze
+    FORMAT_EXPANSION_REGEX = /(?<!%)(?:%%)*\K#{FORMAT_DIRECTIVE_REGEX}/.freeze
 
     def expand_wareki_format(format_str)
-      format_str.to_str.gsub(FORMAT_EXPANSION_REGEX) { |m| m == '%%' ? m : (format($2, $1) || m) }
+      format_str.to_str.gsub(FORMAT_EXPANSION_REGEX) { format($2, $1) || $& }
     end
 
     def strftime(format_str = '%JF')
