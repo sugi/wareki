@@ -10,6 +10,18 @@ module Wareki
     def wareki_directive?(format)
       !!(format.to_str =~ Wareki::Date::FORMAT_EXPANSION_REGEX)
     end
+
+    def wareki_time_directive?(format)
+      !!(format.to_str =~ Wareki::Utils::TIME_FORMAT_EXPANSION_REGEX)
+    end
+
+    # %JT 時刻トークンと %J 日付トークンの両方を展開した文字列を返す
+    def expand_all_wareki_formats(format, datetime)
+      ret = format
+      ret = Wareki::Utils.expand_time_format(ret, datetime) if wareki_time_directive?(ret)
+      ret = datetime.to_wareki_date.expand_wareki_format(ret) if wareki_directive?(ret)
+      ret
+    end
   end
 end
 
@@ -60,8 +72,18 @@ end
 class DateTime
   alias _wareki_strftime_orig strftime
   def strftime(format = '%FT%T%:z')
-    return _wareki_strftime_orig(format) unless Wareki::StdExt.wareki_directive?(format)
+    _wareki_strftime_orig(Wareki::StdExt.expand_all_wareki_formats(format, self))
+  end
+end
 
-    _wareki_strftime_orig(to_wareki_date.expand_wareki_format(format))
+# :nodoc:
+class Time
+  def to_wareki_date
+    Wareki::Date.jd(to_date.jd)
+  end
+
+  alias _wareki_strftime_orig strftime
+  def strftime(format)
+    _wareki_strftime_orig(Wareki::StdExt.expand_all_wareki_formats(format, self))
   end
 end

@@ -79,4 +79,30 @@ describe Wareki::StdExt do
     expect(dt.strftime('%F')).to eq '2019-05-04'
     expect(dt.strftime).to eq dt._wareki_strftime_orig
   end
+
+  it 'supports wareki time directives on Time' do
+    t = Time.new(2019, 5, 4, 13, 45, 6)
+    expect(t.strftime('%JF %JTF')).to eq '令和元年五月四日 十三時四十五分六秒'
+    expect(t.strftime('%JTf')).to eq '13時45分06秒'
+    expect(t.strftime('%JTHk時%JTMk分')).to eq '十三時四十五分'
+    expect(t.strftime('%F %H:%M:%S')).to eq '2019-05-04 13:45:06'
+    expect(t.strftime('x%%JTF')).to eq 'x%JTF'
+    expect(t.strftime('x%%JF')).to eq 'x%JF'
+  end
+
+  it 'adds Time#to_wareki_date' do
+    t = Time.new(2019, 5, 4, 13, 45, 6)
+    expect(t.to_wareki_date).to eq Wareki::Date.parse('令和元年五月四日')
+  end
+
+  it 'supports wareki time directives on DateTime' do
+    dt = DateTime.new(2019, 5, 4, 13, 45, 6)
+    expect(dt.strftime('%JF %JTF')).to eq '令和元年五月四日 十三時四十五分六秒'
+    expect(dt.strftime('%JTf')).to eq '13時45分06秒'
+    expect(dt.strftime).to eq dt._wareki_strftime_orig
+  end
+
+  it 'keeps %JT literal on Date' do
+    expect(Date.new(2019, 5, 4).strftime('%JTF')).to eq '%JTF'
+  end
 end
