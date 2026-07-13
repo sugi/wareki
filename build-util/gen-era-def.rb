@@ -10,7 +10,9 @@
 #
 require 'json'
 require 'open-uri'
-require_relative '../lib/wareki/calendar_def'
+# インストール済み gem の wareki ではなく、このリポジトリの lib を確実に読む
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+require 'wareki/calendar'
 
 class Wareki::EraDefGenerator
   SOURCE_URL = 'https://raw.githubusercontent.com/manakai/data-locale/master/data/calendar/era-defs.json'
@@ -53,7 +55,7 @@ class Wareki::EraDefGenerator
 
   # 明治のみ改元の詔により元年1月1日 (慶応4年1月1日) に遡って適用される
   def meiji_start
-    Wareki::YEAR_DEFS.find { |y| y.year == MEIJI_FIRST_YEAR }.start
+    Wareki::Calendar.to_jd(MEIJI_FIRST_YEAR, 1, 1, false)
   end
 
   # 明治より前は改元日当日を旧元号の末日としても含める (end = 次の改元日)。
