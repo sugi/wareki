@@ -208,4 +208,28 @@ describe Wareki::Utils do
     expect(Wareki::ERA_BY_NAME['西暦']).to be_frozen
     expect(u.find_era(Date.new(2019, 5, 1))).to be_frozen
   end
+
+  it 'deep freezes calendar year definitions' do
+    year_def = Wareki::YEAR_DEFS.first
+
+    expect(Wareki::YEAR_DEFS).to be_frozen
+    expect(Wareki::YEAR_DEFS).to all(be_frozen)
+    expect(Wareki::YEAR_DEFS.map(&:month_starts)).to all(be_frozen)
+    expect(Wareki::YEAR_DEFS.map(&:month_days)).to all(be_frozen)
+    expect(Wareki::YEAR_BY_NUM[year_def.year]).to equal year_def
+    expect(Wareki::YEAR_BY_NUM[year_def.year]).to be_frozen
+
+    expect { year_def.month_starts << year_def.start }.to raise_error(RuntimeError)
+    expect { year_def.month_days << 30 }.to raise_error(RuntimeError)
+    expect { year_def.year = 0 }.to raise_error(RuntimeError)
+  end
+
+  it 'keeps historical lunisolar conversion working with frozen definitions' do
+    civil_date = Date.new(1683, 6, 28, Date::GREGORIAN)
+    wareki_date = Wareki::Date.date(civil_date)
+
+    expect([wareki_date.era_name, wareki_date.era_year, wareki_date.month,
+            wareki_date.day, wareki_date.leap_month?]).to eq ['天和', 3, 5, 4, true]
+    expect(Wareki::Date.new('天和', 3, 5, 4, true).to_date(Date::GREGORIAN)).to eq civil_date
+  end
 end
