@@ -48,23 +48,6 @@ module Wareki
   ERA_BY_NAME['西暦'] = ERA_BY_NAME[''] = Era.new('西暦', 1, 1_721_424, DATE_INFINITY.jd)
   ERA_BY_NAME.default_proc = ->(hash, key) { hash.fetch(SQUARE_ERAS[key] || NORMALIZE_KANJI_VARIANTS[key], nil) }
   ERA_BY_NAME.freeze
-  # 南北朝期に北朝でのみ使われた元号。歴史上固定のため手書きで保持する。
-  # jd からの元号解決では README の記載どおり南朝を優先し、これらは索引から
-  # 除外する (名前からの解釈・変換は ERA_BY_NAME で引き続き可能)。
-  NORTH_COURT_ERA_NAMES = %w(正慶 暦応 康永 貞和 観応 文和 延文 康安 貞治
-                             応安 永和 康暦 永徳 至徳 嘉慶 康応).freeze
-  ERA_JD_LOOKUP = begin
-    eras = ERA_DEFS.reject { |e| NORTH_COURT_ERA_NAMES.include?(e.name) }.map(&:dup)
-    meitoku = eras.find { |e| e.name == '明徳' }
-    gencyu = eras.find { |e| e.name == '元中' }
-    # 明徳(北朝発祥)は南北朝合一で継続元号になるため、元中の終端以降のみ充てる
-    meitoku.start = gencyu.end
-    eras.sort_by!(&:start)
-    # 重複・境界共有は後続元号を優先 (従来の reverse_each と同じ規則)
-    eras.each_cons(2) { |a, b| a.end = b.start - 1 if a.end >= b.start }
-    eras.each(&:freeze)
-    eras.freeze
-  end
   ERA_REGEX = Regexp.new(
     Regexp.union(*ERA_BY_NAME.keys, *SQUARE_ERAS.keys).source.gsub(
       Regexp.union(*KANJI_VARIANTS.keys),
