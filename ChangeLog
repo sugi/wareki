@@ -4,6 +4,18 @@
 	* Shrink in-memory kyuureki calendar table to ~1/48 (bit-packed
 	  one-integer-per-year representation in new internal module
 	  Wareki::Calendar); calendar definitions now load ~30x faster
+	* Era definitions are now generated from manakai/data-locale
+	  era-defs.json instead of the Wikipedia era list page
+	  (build-util/gen-era-def.rb); corrects 正平/建徳/文中 boundaries,
+	  白雉/朱鳥 now cover until the end of their last kyuureki year,
+	  and ERA_NORTH_DEFS 元徳 now ends at 正慶 transition
+	* Wareki.parse_to_date and patched Date.parse/_parse no longer
+	  fall back to stdlib parsing on UnsupportedDateRange; the error
+	  propagates again as in 1.x (reverts a 2.0.0 change)
+	* Cache kansuji conversion of small numbers for %J format
+	  directives; Utils.to_simple_kan delegates non-Integer values
+	  to YaKansuji
+	* Fast-path ASCII-only strings in patched Date.parse/Date._parse
 	* Remove internal constants Wareki::YEAR_DEFS, Wareki::YEAR_BY_NUM,
 	  Wareki::Year and Wareki::Utils.find_year
 	* required_ruby_version is now >= 2.3
@@ -28,11 +40,6 @@
 	* Update kyuureki calendar data (regenerated from
 	  manakai/data-locale); corrects month boundaries of some
 	  historical years
-	* Era definitions are now generated from manakai/data-locale
-	  era-defs.json instead of the Wikipedia era list page
-	  (build-util/gen-era-def.rb); corrects 正平/建徳/文中 boundaries,
-	  白雉/朱鳥 now cover until the end of their last kyuureki year,
-	  and ERA_NORTH_DEFS 元徳 now ends at 正慶 transition
 	* Wareki::Date#- returns day count for date-like operands;
 	  #+ raises TypeError for non-numeric operands (stdlib parity)
 	* Support date calculation with ActiveSupport::Duration
