@@ -25,6 +25,6 @@ formatting, and bi-directional convertion with standard Date class.
 
   spec.add_dependency 'ya_kansuji', '> 0.0.9', '< 2.0.0'
 
-  spec.required_ruby_version = '>= 2.0.0'
+  spec.required_ruby_version = '>= 2.3.0'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
