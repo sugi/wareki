@@ -29,7 +29,7 @@ module Wareki
 
     def era_year_to_civil(era_name, era_year)
       era_name = era_name.to_s
-      return era_year if era_name == '' || era_name == '西暦'
+      return era_year if ['', '西暦'].include?(era_name)
       return -era_year if era_name == '紀元前'
       return era_year + IMPERIAL_START_YEAR if IMPERIAL_ERA_NAMES.include?(era_name)
 
@@ -40,7 +40,7 @@ module Wareki
 
     def civil_to_era_year(era_name, year)
       era_name = era_name.to_s
-      return year if era_name == '' || era_name == '西暦'
+      return year if ['', '西暦'].include?(era_name)
       return -year if era_name == '紀元前'
       return year - IMPERIAL_START_YEAR if IMPERIAL_ERA_NAMES.include?(era_name)
 

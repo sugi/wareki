@@ -153,9 +153,9 @@ module Wareki
     end
 
     def _validate_date!
-      month.is_a?(Integer) && month >= 1 && month <= 12 or
+      (month.is_a?(Integer) && month >= 1 && month <= 12) or
         raise ArgumentError, "invalid date (month out of range): #{inspect}"
-      day.is_a?(Integer) && day >= 1 or
+      (day.is_a?(Integer) && day >= 1) or
         raise ArgumentError, "invalid date (day out of range): #{inspect}"
       if !WESTERN_ERA_NAMES.include?(@era_name) && @year < GREGORIAN_START_YEAR
         # 暦テーブル外の年は従来どおり jd 変換時の UnsupportedDateRange に委ねる
@@ -325,6 +325,7 @@ module Wareki
       # rubocop:disable Style/ClassEqualityComparison
       return other.in_days if other.class.name == 'ActiveSupport::Duration'
       # rubocop:enable Style/ClassEqualityComparison
+
       other.is_a?(Numeric) ? other : nil
     end
 

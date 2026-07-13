@@ -106,11 +106,12 @@ describe Wareki::Date do
           def self.days(d)
             @days ||= d
           end
+
           def in_days
             @days
           end
         end
-      end # Dummy...
+      end
     end
     expect(described_class.today + ActiveSupport::Duration.days(3)).to eq described_class.today + 3
     expect(described_class.today - ActiveSupport::Duration.days(3)).to eq described_class.today - 3
@@ -381,7 +382,7 @@ describe Wareki::Date do
     b = a + 1
     expect(a < b).to be true
     expect(a > b).to be false
-    expect([b, a].sort.first).to eq a
+    expect([b, a].sort).to eq [a, b]
     expect(a.between?(a - 1, b)).to be true
     expect((a..b).to_a.length).to eq 2
     expect(a < Date.new(1996, 1, 1)).to be true

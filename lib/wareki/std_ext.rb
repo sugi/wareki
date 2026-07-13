@@ -24,6 +24,7 @@ class Date
   alias _wareki_strftime_orig strftime
   def strftime(format = '%F')
     return _wareki_strftime_orig(format) unless Wareki::StdExt.wareki_directive?(format)
+
     _wareki_strftime_orig(to_wareki_date.expand_wareki_format(format))
   end
 
@@ -56,6 +57,7 @@ class DateTime
   alias _wareki_strftime_orig strftime
   def strftime(format = '%FT%T%:z')
     return _wareki_strftime_orig(format) unless Wareki::StdExt.wareki_directive?(format)
+
     _wareki_strftime_orig(to_wareki_date.expand_wareki_format(format))
   end
 end
