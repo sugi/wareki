@@ -377,6 +377,16 @@ describe Wareki::Date do
     expect { d.jd }.to raise_error(ArgumentError, /invalid date/)
   end
 
+  it 'returns month index within the lunisolar year' do
+    expect(described_class.new('天和', 3, 3, 1).month_index).to eq 2
+    expect(described_class.new('天和', 3, 5, 4, true).month_index).to eq 5
+    expect(described_class.new('天和', 3, 6, 1).month_index).to eq 6
+    expect(described_class.new('令和', 2, 8, 10).month_index).to eq 7
+    expect(described_class.new('西暦', 1600, 2, 1).month_index).to eq 1
+    expect { described_class.imperial(100, 2, 1).month_index }
+      .to raise_error(Wareki::UnsupportedDateRange)
+  end
+
   it 'can set imperial year' do
     d = described_class.today
     d.imperial_year = 2685
