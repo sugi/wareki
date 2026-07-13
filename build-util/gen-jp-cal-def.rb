@@ -43,5 +43,11 @@ calinfo.each do |y, d|
   y < 445 and next
   puts "    Year.new(#{y}, #{d[:start]}, #{d[:end]}, #{d[:leap].inspect}, #{d[:month_starts].inspect}, #{d[:month_days].inspect}),"
 end
-puts "  ].freeze"
+puts "  ]"
+puts "  YEAR_DEFS.each do |year_def|"
+puts "    year_def.month_starts.freeze"
+puts "    year_def.month_days.freeze"
+puts "    year_def.freeze"
+puts "  end"
+puts "  YEAR_DEFS.freeze"
 puts "end"

@@ -115,6 +115,52 @@ describe Wareki::Utils do
     expect(u.normalize_time('平成元年五月四日十二時三十四分')).to eq '平成元年五月四日12:34'
   end
 
+  it 'uses cached simple kansuji for values from 0 through 99' do
+    expected = {
+      0 => '零', 1 => '一', 9 => '九', 10 => '十',
+      31 => '三十一', 59 => '五十九', 60 => '六十', 99 => '九十九',
+    }
+
+    expect(described_class::SIMPLE_KANSUJI_CACHE).to be_frozen
+    expect(described_class::SIMPLE_KANSUJI_CACHE).to all(be_frozen)
+    allow(YaKansuji).to receive(:to_kan).and_call_original
+    expected.each do |num, kansuji|
+      expect(u.to_simple_kan(num)).to eq kansuji
+    end
+    expect(YaKansuji).not_to have_received(:to_kan)
+
+    result = u.to_simple_kan(31)
+    expect(result).not_to be_frozen
+    result << '日'
+    expect(result).to eq '三十一日'
+    expect(described_class::SIMPLE_KANSUJI_CACHE[31]).to eq '三十一'
+  end
+
+  it 'delegates simple kansuji outside the cache range' do
+    expected_hundred = YaKansuji.to_kan(100, :simple)
+    expected_negative = YaKansuji.to_kan(-1, :simple)
+    allow(YaKansuji).to receive(:to_kan).and_call_original
+
+    expect(u.to_simple_kan(100)).to eq expected_hundred
+    expect(u.to_simple_kan(-1)).to eq expected_negative
+    expect(YaKansuji).to have_received(:to_kan).with(100, :simple).once
+    expect(YaKansuji).to have_received(:to_kan).with(-1, :simple).once
+  end
+
+  it 'delegates non-integer simple kansuji values' do
+    expected = {
+      nil => '零',
+      '1' => '一',
+      1.5 => '一',
+    }
+    allow(YaKansuji).to receive(:to_kan).and_call_original
+
+    expected.each do |value, kansuji|
+      expect(u.to_simple_kan(value)).to eq kansuji
+      expect(YaKansuji).to have_received(:to_kan).with(value, :simple).once
+    end
+  end
+
   it 'transliterates out-of-range times as-is' do
     expect(u.normalize_time('二十五時')).to eq '25:00'
     expect(u.normalize_time('十二時七十分')).to eq '12:70'
@@ -175,5 +221,29 @@ describe Wareki::Utils do
     expect(Wareki::ERA_BY_NAME['皇紀']).to be_frozen
     expect(Wareki::ERA_BY_NAME['西暦']).to be_frozen
     expect(u.find_era(Date.new(2019, 5, 1))).to be_frozen
+  end
+
+  it 'deep freezes calendar year definitions' do
+    year_def = Wareki::YEAR_DEFS.first
+
+    expect(Wareki::YEAR_DEFS).to be_frozen
+    expect(Wareki::YEAR_DEFS).to all(be_frozen)
+    expect(Wareki::YEAR_DEFS.map(&:month_starts)).to all(be_frozen)
+    expect(Wareki::YEAR_DEFS.map(&:month_days)).to all(be_frozen)
+    expect(Wareki::YEAR_BY_NUM[year_def.year]).to equal year_def
+    expect(Wareki::YEAR_BY_NUM[year_def.year]).to be_frozen
+
+    expect { year_def.month_starts << year_def.start }.to raise_error(RuntimeError)
+    expect { year_def.month_days << 30 }.to raise_error(RuntimeError)
+    expect { year_def.year = 0 }.to raise_error(RuntimeError)
+  end
+
+  it 'keeps historical lunisolar conversion working with frozen definitions' do
+    civil_date = Date.new(1683, 6, 28, Date::GREGORIAN)
+    wareki_date = Wareki::Date.date(civil_date)
+
+    expect([wareki_date.era_name, wareki_date.era_year, wareki_date.month,
+            wareki_date.day, wareki_date.leap_month?]).to eq ['天和', 3, 5, 4, true]
+    expect(Wareki::Date.new('天和', 3, 5, 4, true).to_date(Date::GREGORIAN)).to eq civil_date
   end
 end

@@ -43,24 +43,28 @@ class Date
   class << self
     alias _wareki_parse_orig parse
     def parse(str = '-4712-01-01', comp = true, start = ::Date::ITALY)
+      return ::Date._wareki_parse_orig(str, comp, start) if str.to_s.ascii_only?
+
       str = Wareki::Utils.normalize_time(str)
       str.to_s =~ Wareki::PARSE_QUICK_FILTER or
         return ::Date._wareki_parse_orig(str, comp, start)
       Wareki::Date.parse(str).to_date(start)
     rescue Wareki::InvalidDate
       raise
-    rescue ArgumentError, Wareki::UnsupportedDateRange
+    rescue ArgumentError
       ::Date._wareki_parse_orig(str, comp, start)
     end
 
     alias _wareki__parse_orig _parse
     def _parse(str, comp = true)
+      return ::Date._wareki__parse_orig(str, comp) if str.to_s.ascii_only?
+
       str = Wareki::Utils.normalize_time(str)
       str.to_s =~ Wareki::PARSE_QUICK_FILTER or
         return ::Date._wareki__parse_orig(str, comp)
       di = Wareki::Date._parse(str)
       wdate = Wareki::Date.new(di[:era], di[:year], di[:month], di[:day], di[:is_leap])
-    rescue ArgumentError, Wareki::UnsupportedDateRange
+    rescue ArgumentError
       ::Date._wareki__parse_orig(str, comp)
     else
       ::Date._wareki__parse_orig(str.sub(Wareki::REGEX, wdate.strftime('%F ')), comp)

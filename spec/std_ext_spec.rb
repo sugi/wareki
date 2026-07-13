@@ -22,10 +22,49 @@ describe Wareki::StdExt do
     expect(Date._parse('completely invalid date')).to eq({})
   end
 
+  it 'preserves unsupported date range errors for recognized wareki dates' do
+    date = '皇紀100年5月4日'
+
+    expect { Date.parse(date) }.to raise_error(Wareki::UnsupportedDateRange)
+    expect { Date._parse(date) }.to raise_error(Wareki::UnsupportedDateRange)
+    expect { Time.parse(date) }.to raise_error(Wareki::UnsupportedDateRange)
+  end
+
   it 'skips wareki parsing for obviously non-wareki strings' do
     expect(Date.parse('2020-01-01')).to eq Date.new(2020, 1, 1)
     expect(Date._parse('2020-01-01')).to eq({year: 2020, mon: 1, mday: 1})
+    expect(Date.parse('2018/1/2(火)')).to eq Date.new(2018, 1, 2)
+    expect(Date.parse('January 2, 2018')).to eq Date.new(2018, 1, 2)
     expect(Date.parse('弥生')).to eq Date.new(Date.today.year, 3, 1)
+  end
+
+  it 'sends ascii input directly to the original parsers' do
+    allow(Wareki::Utils).to receive(:normalize_time).and_call_original
+
+    expect(Date.parse('2025-07-01')).to eq Date._wareki_parse_orig('2025-07-01')
+    expect(Date._parse('2025-07-01')).to eq Date._wareki__parse_orig('2025-07-01')
+    expect(Wareki::Utils).not_to have_received(:normalize_time)
+  end
+
+  it 'preserves standard parsing for ascii dates and times' do
+    ['2025-07-01', 'July 1, 2025', '2025-07-01 12:34:56'].each do |date|
+      expect(Date.parse(date)).to eq Date._wareki_parse_orig(date)
+      expect(Date._parse(date)).to eq Date._wareki__parse_orig(date)
+    end
+  end
+
+  it 'keeps non-ascii dates and times on the wareki path' do
+    expect(Date.parse('令和三年一月一日')).to eq Date.new(2021, 1, 1)
+    expect(Date._parse('12時34分56秒')).to eq({hour: 12, min: 34, sec: 56})
+    expect(Date.parse('弥生')).to eq Date.new(Date.today.year, 3, 1)
+    expect(Date.parse('２０１８年１月２日')).to eq Date.new(2018, 1, 2)
+  end
+
+  it 'falls back after the wareki quick filter matches a non-wareki date' do
+    date = '2018/1/2 (火曜日)'
+
+    expect(Date.parse(date)).to eq Date.new(2018, 1, 2)
+    expect(Date._parse(date)).to eq({year: 2018, mon: 1, mday: 2})
   end
 
   it 'raises on nonexistent wareki dates instead of falling back' do

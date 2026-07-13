@@ -89,7 +89,7 @@ module Wareki
     Date.parse(str).to_date(start)
   rescue InvalidDate
     raise
-  rescue ArgumentError, UnsupportedDateRange
+  rescue ArgumentError
     ::Date.parse(str, true, start)
   end
 end
