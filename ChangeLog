@@ -1,3 +1,29 @@
+2025-03-10  Tatsuki Sugiura  <sugi@nemui.org>
+
+	* Version: 2.0.0
+
+	[ by masa.kunikata <masa.kunikata@gmail.com> ]
+  * Add zero padding format feature
+	* Use zero padded format on default
+	* Strict date validation: nonexistent dates now raise ArgumentError
+	  (month/day out of range, nonexistent leap month, and the
+	  Meiji 5 December calendar-switch gap for all era notations)
+	* Prefer southern court eras on conversion from Date/jd (README behavior)
+	* Wareki::Date#- returns day count for date-like operands;
+	  #+ raises TypeError for non-numeric operands (stdlib parity)
+	* Add Wareki::Date#hash, #<=>, Comparable and #succ
+	* Invalidate cached jd on attribute writes; writers keep
+	  year/era_year consistent
+	* Fix imperial_year= setter (sign error)
+	* Parse apostrophe leap-month markers so %Jf/%Jm output round-trips
+	* Fix misokka (晦日) parsing for 皇紀/西暦/紀元前/era-less dates
+	* DateTime#strftime now supports %J directives
+	* Escaped %%J or invalid %J sequences no longer trigger conversion
+	* Fast-path non-wareki strings in patched Date.parse/_parse
+	* Wareki.parse_to_date falls back on UnsupportedDateRange too
+	* Fix deprecated Utils.i_to_kan (was calling undefined method)
+	* gemspec: SPDX license identifier (BSD-2-Clause)
+
 2019-12-24  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version: 1.1.0
