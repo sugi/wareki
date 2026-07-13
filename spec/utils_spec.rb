@@ -43,4 +43,37 @@ describe Wareki::Utils do
     expect(u.find_year(2_293_061).year).to eq 1566
     expect(u.find_year(2_293_443).year).to eq 1566
   end
+
+  it 'converts era year to civil year' do
+    expect(u.era_year_to_civil('明治', 5)).to eq 1872
+    expect(u.era_year_to_civil('㍾', 5)).to eq 1872
+    expect(u.era_year_to_civil('皇紀', 2532)).to eq 1872
+    expect(u.era_year_to_civil('神武天皇即位紀元', 2685)).to eq 2025
+    expect(u.era_year_to_civil('', 2020)).to eq 2020
+    expect(u.era_year_to_civil(nil, 2020)).to eq 2020
+    expect(u.era_year_to_civil('西暦', 321)).to eq 321
+    expect(u.era_year_to_civil('紀元前', 203)).to eq(-203)
+    expect { u.era_year_to_civil('謎元号', 1) }.to raise_error(ArgumentError)
+  end
+
+  it 'converts civil year to era year' do
+    expect(u.civil_to_era_year('明治', 1872)).to eq 5
+    expect(u.civil_to_era_year('皇紀', 1872)).to eq 2532
+    expect(u.civil_to_era_year('紀元前', -203)).to eq 203
+    expect(u.civil_to_era_year('', 2020)).to eq 2020
+  end
+
+  it 'returns last day of month by era' do
+    expect(u.last_day_of_era_month('明治', 1872, 10, false)).to eq 30
+    expect(u.last_day_of_era_month('皇紀', 1872, 10, false)).to eq 30
+    expect(u.last_day_of_era_month('', 2000, 2, false)).to eq 29
+    expect(u.last_day_of_era_month('紀元前', -1, 12, false)).to eq 31
+    expect(u.last_day_of_era_month('西暦', 300, 5, false)).to eq 31
+    expect(u.last_day_of_era_month('令和', 2021, 2, false)).to eq 28
+  end
+
+  it 'returns nil for jd before the year table' do
+    expect(u.find_year(1_883_617)).to be_nil
+    expect(u.find_year(1_883_618).year).to eq 445
+  end
 end

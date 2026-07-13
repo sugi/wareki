@@ -9,6 +9,8 @@ module Wareki
   GREGORIAN_START_YEAR = 1873
   IMPERIAL_START = 1_480_041  # Date.new(-660, 2, 11, Date::GREGORIAN).jd
   IMPERIAL_START_YEAR = -660
+  WESTERN_ERA_NAMES = ['', '西暦', '紀元前'].freeze
+  IMPERIAL_ERA_NAMES = %w(皇紀 神武天皇即位紀元).freeze
   DATE_INFINITY = ::Date.new(280_000_000, 12, 31) # Use 280000000 for jruby limitation...
   YEAR_BY_NUM = Hash[*YEAR_DEFS.map { |y| [y.year, y] }.flatten].freeze
   KANJI_VARIANTS = {
