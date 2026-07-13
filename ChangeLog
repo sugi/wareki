@@ -3,7 +3,7 @@
 	* Version: 2.1.0
 	* Shrink in-memory kyuureki calendar table to ~1/48 (bit-packed
 	  one-integer-per-year representation in new internal module
-	  Wareki::Calendar); calendar definitions now load ~50x faster
+	  Wareki::Calendar); calendar definitions now load ~30x faster
 	* Remove internal constants Wareki::YEAR_DEFS, Wareki::YEAR_BY_NUM,
 	  Wareki::Year and Wareki::Utils.find_year
 	* required_ruby_version is now >= 2.3

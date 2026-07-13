@@ -6,7 +6,7 @@ require 'nokogiri'
 require 'date'
 require 'pp'
 
-require File.dirname(__FILE__) + '/../lib/wareki/calendar_def'
+require File.dirname(__FILE__) + '/../lib/wareki/calendar'
 
 module Wareki; end
 class Wareki::Generator
@@ -34,7 +34,7 @@ class Wareki::Generator
         if d[:start].new_start(Date::GREGORIAN).year >= 1873
           year = Date.new(d[:start].year, 1, 1, Date::GREGORIAN).year
         else
-          year = Wareki::YEAR_DEFS.bsearch { |y| y.end > d[:start].jd }.year
+          year = Wareki::Calendar.find_date_ary(d[:start].jd)[0]
         end
         ret << %Q{#{indent}Era.new("#{g}", #{year}, #{d[:start].jd}, #{d[:end].jd}),}
       end
