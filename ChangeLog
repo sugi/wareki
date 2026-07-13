@@ -1,10 +1,6 @@
-2025-03-10  Tatsuki Sugiura  <sugi@nemui.org>
+2026-07-13  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version: 2.0.0
-
-	[ by masa.kunikata <masa.kunikata@gmail.com> ]
-	* Add zero padding format feature
-	* Use zero padded format on default
 	* Strict date validation: nonexistent dates now raise
 	  Wareki::InvalidDate (< ArgumentError) (month/day out of range,
 	  nonexistent leap month, and the Meiji 5 December calendar-switch
@@ -25,6 +21,12 @@
 	* Wareki.parse_to_date falls back on UnsupportedDateRange too
 	* Fix deprecated Utils.i_to_kan (was calling undefined method)
 	* gemspec: SPDX license identifier (BSD-2-Clause)
+
+2025-03-10  Tatsuki Sugiura  <sugi@nemui.org>
+
+	[ by masa.kunikata <masa.kunikata@gmail.com> ]
+	* Add zero padding format feature
+	* Use zero padded format on default
 
 2019-12-24  Tatsuki Sugiura  <sugi@nemui.org>
 
