@@ -28,9 +28,10 @@ RSpec/InstanceVariable:
   Exclude:
     - 'spec/date_spec.rb'
 
-# Offense count: 4
+# Offense count: 5
 RSpec/SpecFilePathFormat:
   Exclude:
+    - 'spec/calendar_spec.rb'
     - 'spec/date_spec.rb'
     - 'spec/kansuji_spec.rb'
     - 'spec/std_ext_spec.rb'
