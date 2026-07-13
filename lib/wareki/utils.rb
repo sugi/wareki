@@ -5,6 +5,9 @@ require 'ya_kansuji'
 module Wareki
   # Static utility methods.
   module Utils
+    TIME_FORMAT_DIRECTIVE_REGEX = /%J(-|[_0]{0,2}[0-9]*|)(T(?:[fF]|[HMS]k?))/.freeze
+    TIME_FORMAT_EXPANSION_REGEX = /(?<!%)(?:%%)*\K#{TIME_FORMAT_DIRECTIVE_REGEX}/.freeze
+
     module_function
 
     def last_day_of_month(year, month, is_leap)
@@ -149,6 +152,38 @@ module Wareki
       return Kernel.format('%<hour>02d:%<min>02d', hour: hour, min: min) unless match[:sec]
 
       Kernel.format('%<hour>02d:%<min>02d:%<sec>02d', hour: hour, min: min, sec: k2i(match[:sec]))
+    end
+
+    def number_format(opt)
+      case opt
+      when '', '0', '_0' then '%02d'
+      when '-'           then '%d'
+      when /_\Z/         then '%2d'
+      when /0?_/         then "%#{opt.sub(/0?_/, '')}d"
+      when /_?0/         then "%#{opt.sub(/_?0/, '0')}d"
+      else "%0#{opt}d"
+      end
+    end
+
+    def expand_time_format(format_str, time)
+      format_str.to_str.gsub(TIME_FORMAT_EXPANSION_REGEX) { _format_time_directive($2, $1, time) || $& }
+    end
+
+    def _format_time_directive(key, opt, time)
+      case key.to_sym
+      when :Tf
+        nf = number_format(opt)
+        Kernel.format("#{nf}時#{nf}分#{nf}秒", time.hour, time.min, time.sec)
+      when :TF
+        "#{YaKansuji.to_kan(time.hour, :simple)}時#{YaKansuji.to_kan(time.min, :simple)}分" \
+        "#{YaKansuji.to_kan(time.sec, :simple)}秒"
+      when :TH  then i2z(time.hour)
+      when :THk then YaKansuji.to_kan(time.hour, :simple)
+      when :TM  then i2z(time.min)
+      when :TMk then YaKansuji.to_kan(time.min, :simple)
+      when :TS  then i2z(time.sec)
+      when :TSk then YaKansuji.to_kan(time.sec, :simple)
+      end
     end
 
     # DEPRECATED

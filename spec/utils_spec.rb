@@ -132,6 +132,38 @@ describe Wareki::Utils do
     expect(u.normalize_time('元年時')).to eq '元年時'
   end
 
+  it 'expands %JT time format directives' do
+    t = Time.new(2015, 8, 1, 12, 34, 56)
+    expect(u.expand_time_format('%JTf', t)).to eq '12時34分56秒'
+    expect(u.expand_time_format('%JTF', t)).to eq '十二時三十四分五十六秒'
+    expect(u.expand_time_format('%JTH', t)).to eq '１２'
+    expect(u.expand_time_format('%JTHk', t)).to eq '十二'
+    expect(u.expand_time_format('%JTM', t)).to eq '３４'
+    expect(u.expand_time_format('%JTMk', t)).to eq '三十四'
+    expect(u.expand_time_format('%JTS', t)).to eq '５６'
+    expect(u.expand_time_format('%JTSk', t)).to eq '五十六'
+    expect(u.expand_time_format('%JTHk時%JTMk分', t)).to eq '十二時三十四分'
+  end
+
+  it 'pads %JTf like %Jf and honors padding flags' do
+    t = Time.new(2015, 8, 1, 3, 4, 5)
+    expect(u.expand_time_format('%JTf', t)).to eq '03時04分05秒'
+    expect(u.expand_time_format('%J-Tf', t)).to eq '3時4分5秒'
+  end
+
+  it 'always emits all three components for composite time directives' do
+    t = Time.new(2015, 8, 1, 0, 0, 0)
+    expect(u.expand_time_format('%JTF', t)).to eq '零時零分零秒'
+    expect(u.expand_time_format('%JTf', t)).to eq '00時00分00秒'
+  end
+
+  it 'leaves escaped or unknown %JT sequences alone' do
+    t = Time.new(2015, 8, 1, 12, 34, 56)
+    expect(u.expand_time_format('x%%JTF %JTHk', t)).to eq 'x%%JTF 十二'
+    expect(u.expand_time_format('%JTz', t)).to eq '%JTz'
+    expect(u.expand_time_format('%H:%M:%S', t)).to eq '%H:%M:%S'
+  end
+
   it 'i_to_kan still works as deprecated api' do
     result = nil
     expect { result = u.i_to_kan(5) }.to output(/DEPRECATED/).to_stderr
