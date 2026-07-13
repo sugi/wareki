@@ -38,6 +38,7 @@ jobs:
           path-to-lcov: ./coverage/lcov.info
           flag-name: ruby-${{ matrix.ruby-version }}
           parallel: true
+          fail-on-error: false
 
   finish:
     needs: test
@@ -49,3 +50,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
+          fail-on-error: false
