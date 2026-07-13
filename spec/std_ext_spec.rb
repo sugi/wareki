@@ -22,10 +22,27 @@ describe Wareki::StdExt do
     expect(Date._parse('completely invalid date')).to eq({})
   end
 
+  it 'preserves unsupported date range errors for recognized wareki dates' do
+    date = '皇紀100年5月4日'
+
+    expect { Date.parse(date) }.to raise_error(Wareki::UnsupportedDateRange)
+    expect { Date._parse(date) }.to raise_error(Wareki::UnsupportedDateRange)
+    expect { Time.parse(date) }.to raise_error(Wareki::UnsupportedDateRange)
+  end
+
   it 'skips wareki parsing for obviously non-wareki strings' do
     expect(Date.parse('2020-01-01')).to eq Date.new(2020, 1, 1)
     expect(Date._parse('2020-01-01')).to eq({year: 2020, mon: 1, mday: 1})
+    expect(Date.parse('2018/1/2(火)')).to eq Date.new(2018, 1, 2)
+    expect(Date.parse('January 2, 2018')).to eq Date.new(2018, 1, 2)
     expect(Date.parse('弥生')).to eq Date.new(Date.today.year, 3, 1)
+  end
+
+  it 'falls back after the wareki quick filter matches a non-wareki date' do
+    date = '2018/1/2 (火曜日)'
+
+    expect(Date.parse(date)).to eq Date.new(2018, 1, 2)
+    expect(Date._parse(date)).to eq({year: 2018, mon: 1, mday: 2})
   end
 
   it 'raises on nonexistent wareki dates instead of falling back' do
