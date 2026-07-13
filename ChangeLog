@@ -1,6 +1,12 @@
 2026-07-13  Tatsuki Sugiura  <sugi@nemui.org>
 
 	* Version: 2.0.0
+	* Time.parse now understands Japanese kansuji/zenkaku time notations
+	  (十二時三十四分五十六秒, 午後三時半, 正午, ...) via the patched
+	  Date._parse; Date.parse no longer misreads bare 時分秒 strings
+	* Add %JT* time format directives (%JTf/%JTF/%JTH(k)/%JTM(k)/%JTS(k));
+	  Time#strftime now supports all %J directives and DateTime#strftime
+	  expands %JT too; add Time#to_wareki_date
 	* Strict date validation: nonexistent dates now raise
 	  Wareki::InvalidDate (< ArgumentError) (month/day out of range,
 	  nonexistent leap month, and the Meiji 5 December calendar-switch
