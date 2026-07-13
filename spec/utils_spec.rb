@@ -37,6 +37,20 @@ describe Wareki::Utils do
     expect(u.find_era(2_256_978).name).to eq '応仁'
   end
 
+  it 'prefers southern court eras on jd lookup (nanboku-cho)' do
+    expect(u.find_era(Date.new(1337, 6, 1, Date::GREGORIAN)).name).to eq '延元'
+    expect(u.find_era(Date.new(1340, 7, 26, Date::GREGORIAN)).name).to eq '興国'
+    expect(u.find_era(Date.new(1350, 12, 21, Date::GREGORIAN)).name).to eq '正平'
+    expect(u.find_era(Date.new(1332, 8, 17, Date::GREGORIAN)).name).to eq '元弘'
+    expect(u.find_era(Date.new(1391, 1, 1, Date::GREGORIAN)).name).to eq '元中'
+    expect(u.find_era(Date.new(1393, 5, 29, Date::GREGORIAN)).name).to eq '明徳'
+  end
+
+  it 'still accepts northern court era names on parse' do
+    expect(Wareki::Date.parse('暦応3年1月1日').era_name).to eq '暦応'
+    expect(Wareki::Date.parse('正慶2年1月1日').era_name).to eq '正慶'
+  end
+
   it 'can find year with first and last day' do
     expect(u.find_year(2_275_903).year).to eq 1519
     expect(u.find_year(2_276_257).year).to eq 1519

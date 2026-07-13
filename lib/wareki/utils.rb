@@ -113,12 +113,8 @@ module Wareki
 
     def find_era(d)
       jd = _to_jd(d)
-      ERA_DEFS.reverse_each do |e|
-        e.start > jd and next
-        e.end < jd and next
-        return e
-      end
-      nil
+      era = ERA_JD_LOOKUP.bsearch { |e| e.end >= jd }
+      era && era.start <= jd ? era : nil
     end
 
     def i2z(num)
