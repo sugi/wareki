@@ -130,6 +130,27 @@ module Wareki
       end
     end
 
+    # 日本語の時刻表記 (漢数字・全角数字の時分秒、午前/午後、半、正午) を
+    # 等価な "HH:MM(:SS)" 表記へ置換する。値の範囲チェックは行わず、
+    # 妥当性判断は Ruby 標準パーサに委ねる (二十五時 -> "25:00")。
+    def normalize_time(str)
+      str.to_s =~ TIME_PARSE_QUICK_FILTER or return str
+      str.to_s.sub(TIME_REGEX) { _time_match_to_s(Regexp.last_match) }
+    end
+
+    def _time_match_to_s(match)
+      return '12:00' if match[:noon]
+
+      hour = k2i(match[:hour])
+      hour += 12 if match[:ampm] == '午後' && hour < 12
+      min = 0
+      min = 30 if match[:half]
+      min = k2i(match[:min]) if match[:min]
+      return Kernel.format('%<hour>02d:%<min>02d', hour: hour, min: min) unless match[:sec]
+
+      Kernel.format('%<hour>02d:%<min>02d:%<sec>02d', hour: hour, min: min, sec: k2i(match[:sec]))
+    end
+
     # DEPRECATED
     def kan_to_i(*args)
       warn '[DEPRECATED] Wareki::Utils.kan_to_i: Please use ya_kansuji gem to handle kansuji'

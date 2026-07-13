@@ -85,6 +85,17 @@ module Wareki
   # 月の別名 (弥生・師走) のいずれかが必要。それ以外は素の Date.parse に
   # 直行させて monkey patch のオーバーヘッドを避ける。
   PARSE_QUICK_FILTER = /[年月日]|元旦|弥生|師走/.freeze
+  TIME_REGEX = %r{
+    (?<noon>正午) |
+    (?:(?<ampm>午前|午後)[[:space:]]*)?
+    (?<hour>[#{NUM_CHARS}]+)[[:space:]]*時
+    (?:[[:space:]]*
+      (?:(?<half>半) |
+         (?<min>[#{NUM_CHARS}]+)[[:space:]]*分
+         (?:[[:space:]]*(?<sec>[#{NUM_CHARS}]+)[[:space:]]*秒)?))?
+  }x.freeze
+  # TIME_REGEX が非空マッチしうるのは「時」か「正午」を含む文字列のみ
+  TIME_PARSE_QUICK_FILTER = /時|正午/.freeze
 
   class UnsupportedDateRange < StandardError; end
   class InvalidDate < ArgumentError; end

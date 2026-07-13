@@ -99,6 +99,39 @@ describe Wareki::Utils do
     expect(lookup.map(&:name) & Wareki::NORTH_COURT_ERA_NAMES).to be_empty
   end
 
+  it 'normalizes japanese time notations' do
+    expect(u.normalize_time('十二時三十四分五十六秒')).to eq '12:34:56'
+    expect(u.normalize_time('１２時３４分')).to eq '12:34'
+    expect(u.normalize_time('12時34分56秒')).to eq '12:34:56'
+    expect(u.normalize_time('三時半')).to eq '03:30'
+    expect(u.normalize_time('午後三時')).to eq '15:00'
+    expect(u.normalize_time('午後三時半')).to eq '15:30'
+    expect(u.normalize_time('午前十時 五分')).to eq '10:05'
+    expect(u.normalize_time('午後 十一時 五十九分 五十九秒')).to eq '23:59:59'
+    expect(u.normalize_time('正午')).to eq '12:00'
+    expect(u.normalize_time('零時')).to eq '00:00'
+    expect(u.normalize_time('十二時')).to eq '12:00'
+    expect(u.normalize_time('午前十二時')).to eq '12:00'
+    expect(u.normalize_time('午後十二時')).to eq '12:00'
+    expect(u.normalize_time('平成元年五月四日十二時三十四分')).to eq '平成元年五月四日12:34'
+  end
+
+  it 'transliterates out-of-range times as-is' do
+    expect(u.normalize_time('二十五時')).to eq '25:00'
+    expect(u.normalize_time('十二時七十分')).to eq '12:70'
+  end
+
+  it 'replaces only the first time notation' do
+    expect(u.normalize_time('三時と五時')).to eq '03:00と五時'
+  end
+
+  it 'keeps strings without time notation unchanged' do
+    s = '平成元年5月4日'
+    expect(u.normalize_time(s)).to equal s
+    expect(u.normalize_time('明治時代')).to eq '明治時代'
+    expect(u.normalize_time('元年時')).to eq '元年時'
+  end
+
   it 'i_to_kan still works as deprecated api' do
     result = nil
     expect { result = u.i_to_kan(5) }.to output(/DEPRECATED/).to_stderr
