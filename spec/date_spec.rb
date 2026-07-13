@@ -122,6 +122,40 @@ describe Wareki::Date do
     expect { described_class.parse('皇紀2532年12月5日') }.to raise_error(ArgumentError)
   end
 
+  it 'raises ArgumentError for nonexistent dates' do
+    # 太陰太陽暦年の月・日超過
+    expect { described_class.new('明治', 5, 13, 1) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('明治', 5, 0, 1) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('天保', 1, 1, 40) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.parse('天保1年1月40日') }.to raise_error(ArgumentError)
+    # グレゴリオ暦年の月・日超過
+    expect { described_class.new('令和', 2, 2, 30) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('令和', 2, 13, 1) }.to raise_error(ArgumentError, /invalid date/)
+    # 西暦・紀元前
+    expect { described_class.new('西暦', 2000, 2, 30) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('紀元前', 203, 4, 31) }.to raise_error(ArgumentError, /invalid date/)
+    # 存在しない閏月
+    expect { described_class.new('元仁', 1, 6, 1, true) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('令和', 2, 5, 4, true) }.to raise_error(ArgumentError, /invalid date/)
+  end
+
+  it 'rejects Meiji 5 December gap for any era notation' do
+    expect { described_class.parse('㍾5年12月3日') }.to raise_error(ArgumentError)
+    expect { described_class.parse('明治5年12月31日') }.to raise_error(ArgumentError)
+    expect { described_class.parse('皇紀2532年12月5日') }.to raise_error(ArgumentError)
+    expect(described_class.parse('明治5年12月2日').to_date).to eq Date.new(1872, 12, 31)
+  end
+
+  it 'still accepts era-start leniency and valid edge dates' do
+    expect(described_class.parse('令和元年1月1日').to_date).to eq Date.new(2019, 1, 1)
+    expect(described_class.new('元仁', 1, 7, 1, true).to_date).to eq Date.new(1224, 8, 17)
+  end
+
+  it 'defers out-of-table imperial years to jd conversion' do
+    d = described_class.imperial(1)
+    expect { d.jd }.to raise_error(Wareki::UnsupportedDateRange)
+  end
+
   it 'can parse date string' do
     d = described_class
     expect(d.parse('平成４年').to_date).to eq Wareki.parse_to_date('平成４年')

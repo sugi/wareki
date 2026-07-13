@@ -14,16 +14,6 @@ module Wareki
       jd(::Date.today.jd)
     end
 
-    def self._check_invalid_date(era, year, month, day)
-      month == 12 or return true
-      day > 2 or return true
-      ((era == '明治' && year == 5) ||
-       (%w(皇紀 神武天皇即位紀元).member?(era) &&
-       year == GREGORIAN_START_YEAR - IMPERIAL_START_YEAR - 1)) and
-        return false
-      true
-    end
-
     def self._parse(str)
       str = str.to_s.gsub(/[[:space:]]/, '')
       match = REGEX.match(str)
@@ -59,9 +49,6 @@ module Wareki
         end
       end
 
-      _check_invalid_date(era, year, month, day) or
-        raise ArgumentError, "Invaild Date: #{str}"
-
       {era: era, year: year, month: month, day: day, is_leap: !!match[:is_leap]}
     end
 
@@ -94,6 +81,7 @@ module Wareki
       @day = day
       @is_leap_month = is_leap_month
       @year = Utils.era_year_to_civil(@era_name, @era_year)
+      _validate_date!
     end
 
     def imperial_year
@@ -131,9 +119,30 @@ module Wareki
       Utils.last_day_of_era_month(@era_name, @year, month, leap_month?)
     end
 
+    def _validate_date!
+      month.is_a?(Integer) && month >= 1 && month <= 12 or
+        raise ArgumentError, "invalid date (month out of range): #{inspect}"
+      day.is_a?(Integer) && day >= 1 or
+        raise ArgumentError, "invalid date (day out of range): #{inspect}"
+      if !WESTERN_ERA_NAMES.include?(@era_name) && @year < GREGORIAN_START_YEAR
+        # 暦テーブル外の年は従来どおり jd 変換時の UnsupportedDateRange に委ねる
+        yobj = YEAR_BY_NUM[@year] or return
+        !leap_month? || yobj.leap_month == month or
+          raise ArgumentError, "invalid date (no leap month): #{inspect}"
+        day <= yobj.month_days[month_index] or
+          raise ArgumentError, "invalid date (day out of range): #{inspect}"
+      else
+        leap_month? and
+          raise ArgumentError, "invalid date (no leap month): #{inspect}"
+        day <= last_day_of_month or
+          raise ArgumentError, "invalid date (day out of range): #{inspect}"
+      end
+    end
+
     def jd
       @jd and return @jd
 
+      _validate_date!
       WESTERN_ERA_NAMES.include?(@era_name) and
         return @jd = ::Date.new(@year, month, day, ::Date::ITALY).jd
 
