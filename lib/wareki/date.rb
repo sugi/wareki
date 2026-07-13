@@ -335,6 +335,8 @@ module Wareki
     end
 
     def _jd_if_date_like(other)
+      return other.jd if other.respond_to?(:jd)
+
       other.respond_to?(:to_date) && !other.is_a?(Numeric) and other = other.to_date
       other.respond_to?(:jd) ? other.jd : nil
     end
