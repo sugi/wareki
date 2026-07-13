@@ -87,11 +87,14 @@ module Wareki
   PARSE_QUICK_FILTER = /[年月日]|元旦|弥生|師走/.freeze
 
   class UnsupportedDateRange < StandardError; end
+  class InvalidDate < ArgumentError; end
 
   module_function
 
   def parse_to_date(str, start = ::Date::ITALY)
     Date.parse(str).to_date(start)
+  rescue InvalidDate
+    raise
   rescue ArgumentError, UnsupportedDateRange
     ::Date.parse(str, true, start)
   end

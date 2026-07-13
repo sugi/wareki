@@ -26,6 +26,13 @@ describe Wareki::StdExt do
     expect(Date.parse('弥生')).to eq Date.new(Date.today.year, 3, 1)
   end
 
+  it 'raises on nonexistent wareki dates instead of falling back' do
+    expect { Date.parse('天保1年2月30日') }.to raise_error(Wareki::InvalidDate)
+    expect { Date.parse('明治5年12月3日') }.to raise_error(Wareki::InvalidDate)
+    expect { Date.parse('平成12年13月3日') }.to raise_error(Wareki::InvalidDate)
+    expect(Date._parse('平成12年2月30日')).to be_a(Hash)
+  end
+
   it 'have Date::JAPAN' do
     expect(Date::JAPAN).to eq Wareki::GREGORIAN_START
   end

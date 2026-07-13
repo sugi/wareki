@@ -3,11 +3,13 @@
 	* Version: 2.0.0
 
 	[ by masa.kunikata <masa.kunikata@gmail.com> ]
-  * Add zero padding format feature
+	* Add zero padding format feature
 	* Use zero padded format on default
-	* Strict date validation: nonexistent dates now raise ArgumentError
-	  (month/day out of range, nonexistent leap month, and the
-	  Meiji 5 December calendar-switch gap for all era notations)
+	* Strict date validation: nonexistent dates now raise
+	  Wareki::InvalidDate (< ArgumentError) (month/day out of range,
+	  nonexistent leap month, and the Meiji 5 December calendar-switch
+	  gap for all era notations); patched Date.parse re-raises it
+	  instead of falling back to stdlib misinterpretation
 	* Prefer southern court eras on conversion from Date/jd (README behavior)
 	* Wareki::Date#- returns day count for date-like operands;
 	  #+ raises TypeError for non-numeric operands (stdlib parity)

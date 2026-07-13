@@ -34,6 +34,8 @@ class Date
       str.to_s =~ Wareki::PARSE_QUICK_FILTER or
         return ::Date._wareki_parse_orig(str, comp, start)
       Wareki::Date.parse(str).to_date(start)
+    rescue Wareki::InvalidDate
+      raise
     rescue ArgumentError, Wareki::UnsupportedDateRange
       ::Date._wareki_parse_orig(str, comp, start)
     end

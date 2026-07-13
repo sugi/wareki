@@ -91,6 +91,14 @@ describe Wareki::Utils do
     expect(u.find_year(1_883_618).year).to eq 445
   end
 
+  it 'keeps ERA_JD_LOOKUP sorted, disjoint and frozen' do
+    lookup = Wareki::ERA_JD_LOOKUP
+    expect(lookup).to be_frozen
+    expect(lookup.all?(&:frozen?)).to be true
+    expect(lookup.each_cons(2).all? { |a, b| a.end < b.start && a.end < b.end }).to be true
+    expect(lookup.map(&:name) & Wareki::NORTH_COURT_ERA_NAMES).to be_empty
+  end
+
   it 'i_to_kan still works as deprecated api' do
     result = nil
     expect { result = u.i_to_kan(5) }.to output(/DEPRECATED/).to_stderr

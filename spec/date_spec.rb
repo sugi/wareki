@@ -142,6 +142,13 @@ describe Wareki::Date do
     expect { described_class.new('令和', 2, 5, 4, true) }.to raise_error(ArgumentError, /invalid date/)
   end
 
+  it 'leaves the object unchanged when a writer raises' do
+    d = described_class.parse('平成7年11月10日')
+    expect { d.era_name = '謎元号' }.to raise_error(ArgumentError)
+    expect(d.era_name).to eq '平成'
+    expect(d.to_date).to eq Date.new(1995, 11, 10)
+  end
+
   it 'rejects Meiji 5 December gap for any era notation' do
     expect { described_class.parse('㍾5年12月3日') }.to raise_error(ArgumentError)
     expect { described_class.parse('明治5年12月31日') }.to raise_error(ArgumentError)

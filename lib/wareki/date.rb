@@ -40,7 +40,7 @@ module Wareki
       end
 
       month > 12 || month < 1 and
-        raise ArgumentError, "Invalid month: #{str}"
+        raise InvalidDate, "invalid date (month out of range): #{str}"
 
       is_leap = !!(match[:is_leap] || match[:is_leap_post])
 
@@ -106,9 +106,10 @@ module Wareki
     end
 
     def year=(v)
+      era_year = Utils.civil_to_era_year(@era_name, v)
       @jd = nil
       @year = v
-      @era_year = Utils.civil_to_era_year(@era_name, v)
+      @era_year = era_year
     end
 
     def month=(v)
@@ -122,15 +123,18 @@ module Wareki
     end
 
     def era_year=(v)
+      year = Utils.era_year_to_civil(@era_name, v)
       @jd = nil
       @era_year = v
-      @year = Utils.era_year_to_civil(@era_name, v)
+      @year = year
     end
 
     def era_name=(v)
+      era_name = v.to_s
+      year = Utils.era_year_to_civil(era_name, @era_year)
       @jd = nil
-      @era_name = v.to_s
-      @year = Utils.era_year_to_civil(@era_name, @era_year)
+      @era_name = era_name
+      @year = year
     end
 
     def __set_jd(v)
@@ -154,21 +158,21 @@ module Wareki
 
     def _validate_date!
       (month.is_a?(Integer) && month >= 1 && month <= 12) or
-        raise ArgumentError, "invalid date (month out of range): #{inspect}"
+        raise InvalidDate, "invalid date (month out of range): #{inspect}"
       (day.is_a?(Integer) && day >= 1) or
-        raise ArgumentError, "invalid date (day out of range): #{inspect}"
+        raise InvalidDate, "invalid date (day out of range): #{inspect}"
       if !WESTERN_ERA_NAMES.include?(@era_name) && @year < GREGORIAN_START_YEAR
         # 暦テーブル外の年は従来どおり jd 変換時の UnsupportedDateRange に委ねる
         yobj = YEAR_BY_NUM[@year] or return
         !leap_month? || yobj.leap_month == month or
-          raise ArgumentError, "invalid date (no leap month): #{inspect}"
+          raise InvalidDate, "invalid date (no leap month): #{inspect}"
         day <= yobj.month_days[month_index] or
-          raise ArgumentError, "invalid date (day out of range): #{inspect}"
+          raise InvalidDate, "invalid date (day out of range): #{inspect}"
       else
         leap_month? and
-          raise ArgumentError, "invalid date (no leap month): #{inspect}"
+          raise InvalidDate, "invalid date (no leap month): #{inspect}"
         day <= last_day_of_month or
-          raise ArgumentError, "invalid date (day out of range): #{inspect}"
+          raise InvalidDate, "invalid date (day out of range): #{inspect}"
       end
     end
 
