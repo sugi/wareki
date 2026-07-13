@@ -16,23 +16,45 @@ module Wareki
     end
 
     def _last_day_of_month_gregorian(year, month)
-      tmp_y = year
-      tmp_m = month
-      if month == 12
-        tmp_y += 1
-        tmp_m = 1
-      else
-        tmp_m += 1
-      end
-      (::Date.new(tmp_y, tmp_m, 1, ::Date::GREGORIAN) - 1).day
+      ::Date.new(year, month, -1, ::Date::GREGORIAN).day
     end
 
     def _last_day_of_month_from_defs(year, month, is_leap)
       yobj = YEAR_BY_NUM[year] or
-        raise UnsupportedDateRange, "Cannot find year #{inspect}"
+        raise UnsupportedDateRange, "Cannot find year #{year}"
       month_idx = month - 1
       month_idx += 1 if is_leap || (yobj.leap_month && yobj.leap_month < month)
       yobj.month_days[month_idx]
+    end
+
+    def era_year_to_civil(era_name, era_year)
+      era_name = era_name.to_s
+      return era_year if ['', '西暦'].include?(era_name)
+      return -era_year if era_name == '紀元前'
+      return era_year + IMPERIAL_START_YEAR if IMPERIAL_ERA_NAMES.include?(era_name)
+
+      era = ERA_BY_NAME[era_name] or
+        raise ArgumentError, "Undefined era '#{era_name}'"
+      era.year + era_year - 1
+    end
+
+    def civil_to_era_year(era_name, year)
+      era_name = era_name.to_s
+      return year if ['', '西暦'].include?(era_name)
+      return -year if era_name == '紀元前'
+      return year - IMPERIAL_START_YEAR if IMPERIAL_ERA_NAMES.include?(era_name)
+
+      era = ERA_BY_NAME[era_name] or
+        raise ArgumentError, "Undefined era '#{era_name}'"
+      year - era.year + 1
+    end
+
+    def last_day_of_era_month(era_name, civil_year, month, is_leap)
+      if WESTERN_ERA_NAMES.include?(era_name.to_s)
+        ::Date.new(civil_year, month, -1, ::Date::ITALY).day
+      else
+        last_day_of_month(civil_year, month, is_leap)
+      end
     end
 
     def alt_month_name_to_i(name)
@@ -85,17 +107,14 @@ module Wareki
 
     def find_year(d)
       jd = _to_jd(d)
+      jd < YEAR_DEFS.first.start and return nil
       YEAR_DEFS.bsearch { |y| y.end >= jd }
     end
 
     def find_era(d)
       jd = _to_jd(d)
-      ERA_DEFS.reverse_each do |e|
-        e.start > jd and next
-        e.end < jd and next
-        return e
-      end
-      nil
+      era = ERA_JD_LOOKUP.bsearch { |e| e.end >= jd }
+      era && era.start <= jd ? era : nil
     end
 
     def i2z(num)
@@ -120,7 +139,7 @@ module Wareki
     # DEPRECATED
     def i_to_kan(*args)
       warn '[DEPRECATED] Wareki::Utils.i_to_kan: Please use ya_kansuji gem to handle kansuji'
-      i2k(*args)
+      YaKansuji.to_kan(*args)
     end
   end
 end

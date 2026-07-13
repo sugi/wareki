@@ -1,3 +1,5 @@
+require 'set'
+
 describe Wareki::Date do
   matchings = {
     # civil date => wareki date
@@ -104,11 +106,12 @@ describe Wareki::Date do
           def self.days(d)
             @days ||= d
           end
+
           def in_days
             @days
           end
         end
-      end # Dummy...
+      end
     end
     expect(described_class.today + ActiveSupport::Duration.days(3)).to eq described_class.today + 3
     expect(described_class.today - ActiveSupport::Duration.days(3)).to eq described_class.today - 3
@@ -120,6 +123,47 @@ describe Wareki::Date do
     expect { described_class.parse('明治5年12月3日') }.to raise_error(ArgumentError)
     expect { described_class.parse('明治5年12月31日') }.to raise_error(ArgumentError)
     expect { described_class.parse('皇紀2532年12月5日') }.to raise_error(ArgumentError)
+  end
+
+  it 'raises ArgumentError for nonexistent dates' do
+    # 太陰太陽暦年の月・日超過
+    expect { described_class.new('明治', 5, 13, 1) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('明治', 5, 0, 1) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('天保', 1, 1, 40) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.parse('天保1年1月40日') }.to raise_error(ArgumentError)
+    # グレゴリオ暦年の月・日超過
+    expect { described_class.new('令和', 2, 2, 30) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('令和', 2, 13, 1) }.to raise_error(ArgumentError, /invalid date/)
+    # 西暦・紀元前
+    expect { described_class.new('西暦', 2000, 2, 30) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('紀元前', 203, 4, 31) }.to raise_error(ArgumentError, /invalid date/)
+    # 存在しない閏月
+    expect { described_class.new('元仁', 1, 6, 1, true) }.to raise_error(ArgumentError, /invalid date/)
+    expect { described_class.new('令和', 2, 5, 4, true) }.to raise_error(ArgumentError, /invalid date/)
+  end
+
+  it 'leaves the object unchanged when a writer raises' do
+    d = described_class.parse('平成7年11月10日')
+    expect { d.era_name = '謎元号' }.to raise_error(ArgumentError)
+    expect(d.era_name).to eq '平成'
+    expect(d.to_date).to eq Date.new(1995, 11, 10)
+  end
+
+  it 'rejects Meiji 5 December gap for any era notation' do
+    expect { described_class.parse('㍾5年12月3日') }.to raise_error(ArgumentError)
+    expect { described_class.parse('明治5年12月31日') }.to raise_error(ArgumentError)
+    expect { described_class.parse('皇紀2532年12月5日') }.to raise_error(ArgumentError)
+    expect(described_class.parse('明治5年12月2日').to_date).to eq Date.new(1872, 12, 31)
+  end
+
+  it 'still accepts era-start leniency and valid edge dates' do
+    expect(described_class.parse('令和元年1月1日').to_date).to eq Date.new(2019, 1, 1)
+    expect(described_class.new('元仁', 1, 7, 1, true).to_date).to eq Date.new(1224, 8, 17)
+  end
+
+  it 'defers out-of-table imperial years to jd conversion' do
+    d = described_class.imperial(1)
+    expect { d.jd }.to raise_error(Wareki::UnsupportedDateRange)
   end
 
   it 'can parse date string' do
@@ -223,6 +267,23 @@ describe Wareki::Date do
     expect(described_class.new('寿永', 1, 1, 1).strftime('%JYK年%JM%JL月%JDK日')).to eq '寿永元年１月元日'
   end
 
+  it 'can parse its own strftime leap-month output' do
+    d = described_class.new('天和', 3, 5, 4, true)
+    expect(described_class.parse(d.strftime('%Jf')).to_date).to eq d.to_date
+    expect(described_class.parse("天和3年5'月4日").leap_month?).to be true
+    expect(described_class.parse('天和3年5’月4日').leap_month?).to be true
+    expect(described_class.parse('天和3年5月4日').leap_month?).to be false
+  end
+
+  it 'honors %% escapes like the patched Date#strftime' do
+    d = described_class.new('天和', 3, 5, 4, true)
+    expect(d.strftime('x%%JF')).to eq 'x%JF'
+    expect(d.strftime('%%%JF')).to eq '%天和三年閏五月四日'
+    expect(d.strftime('rate: 100%% %JF')).to eq 'rate: 100% 天和三年閏五月四日'
+    expect(d.strftime('%%%%JF')).to eq '%%JF'
+    expect(d.strftime('%%%%%JF')).to eq '%%天和三年閏五月四日'
+  end
+
   it 'can be formatted having compatibility with standard Date#strftime' do
     wareki_date = described_class.new('令和', 1, 5, 4)
     date = Date.new(2019, 5, 4)
@@ -267,5 +328,89 @@ describe Wareki::Date do
 
   it 'can parse U+F9A8 variant' do
     expect(Date.parse('令和3年5月4日')).to eq Date.parse('令和3年5月4日')
+  end
+
+  it 'resolves last day of month consistently for any era notation' do
+    expect(described_class.parse('皇紀2532年10月晦日').day).to eq 30
+    expect(described_class.parse('明治5年10月晦日').day).to eq 30
+    expect(described_class.parse('12月晦日').day).to eq 31
+    expect(described_class.parse('紀元前1年12月晦日').to_date).to eq Date.new(-1, 12, 31)
+    expect(described_class.parse('西暦2000年2月晦日').to_date).to eq Date.new(2000, 2, 29)
+  end
+
+  it 'accepts nil era name as western calendar' do
+    expect(described_class.new(nil, 2, 12, 31).to_date).to eq Date.new(2, 12, 31)
+    expect(described_class.new(nil, 2020, 5, 4).to_date).to eq Date.new(2020, 5, 4)
+  end
+
+  it 'can format %JDK for pre-1873 western dates' do
+    expect(described_class.new('西暦', 300, 5, 15).strftime('%JDK')).to eq '十五'
+    expect(described_class.new('西暦', 300, 5, 31).strftime('%JDK')).to eq '晦'
+    expect(described_class.new('紀元前', 203, 12, 31).strftime('%JDK')).to eq '晦'
+  end
+
+  it 'invalidates cached jd on attribute writes' do
+    d = described_class.date(Date.new(2025, 7, 12))
+    d.month = 1
+    expect(d.to_date).to eq Date.new(2025, 1, 12)
+    d.day = 3
+    expect(d.to_date).to eq Date.new(2025, 1, 3)
+    d.era_year = 5
+    expect(d.to_date).to eq Date.new(2023, 1, 3)
+    d.era_name = '平成'
+    expect(d.to_date).to eq Date.new(1993, 1, 3)
+    d.year = 2000
+    expect(d.era_year).to eq 12
+    expect(d.to_date).to eq Date.new(2000, 1, 3)
+  end
+
+  it 'invalidates cached jd on leap month write' do
+    d = described_class.new('元仁', 1, 7, 1)
+    d.jd
+    d.leap_month = true
+    expect(d.jd).to eq described_class.parse('元仁元年閏七月朔日').jd
+  end
+
+  it 'raises invalid date on jd conversion after inconsistent writes' do
+    d = described_class.date(Date.new(2025, 1, 31))
+    d.month = 13
+    expect { d.jd }.to raise_error(ArgumentError, /invalid date/)
+  end
+
+  it 'can set imperial year' do
+    d = described_class.today
+    d.imperial_year = 2685
+    expect(d.imperial_year).to eq 2685
+    expect(d.year).to eq 2025
+  end
+
+  it 'behaves as a value object' do
+    a = described_class.parse('平成7年11月10日')
+    b = described_class.parse('平成7年11月10日')
+    expect(a.eql?(b)).to be true
+    expect(a.hash).to eq b.hash
+    expect({a => 1}[b]).to eq 1
+    expect(Set[a, b].size).to eq 1
+  end
+
+  it 'is comparable and supports ranges' do
+    a = described_class.parse('平成7年11月10日')
+    b = a + 1
+    expect(a < b).to be true
+    expect(a > b).to be false
+    expect([b, a].sort).to eq [a, b]
+    expect(a.between?(a - 1, b)).to be true
+    expect((a..b).to_a.length).to eq 2
+    expect(a < Date.new(1996, 1, 1)).to be true
+    expect(a <=> Object.new).to be_nil
+  end
+
+  it 'returns day count on subtracting date-like objects' do
+    a = described_class.parse('平成7年11月10日')
+    b = described_class.parse('平成7年11月1日')
+    expect(a - b).to eq 9
+    expect(a - a).to eq 0
+    expect(a - a.to_date).to eq 0
+    expect { a + a.to_date }.to raise_error(TypeError)
   end
 end

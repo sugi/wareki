@@ -9,6 +9,14 @@ describe Wareki do
     expect(described_class.parse_to_date('10')).to be_a(Date) # Wierd ruby default behaviour...
   end
 
+  it 'falls back to original parse on unsupported wareki range' do
+    expect { described_class.parse_to_date('皇紀1年') }.to raise_error(ArgumentError)
+  end
+
+  it 'raises on nonexistent wareki dates without stdlib fallback' do
+    expect { described_class.parse_to_date('天保1年2月30日') }.to raise_error(Wareki::InvalidDate)
+  end
+
   it 'has a version number' do
     expect(Wareki::VERSION).not_to be_nil
   end

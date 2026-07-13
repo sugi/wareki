@@ -20,7 +20,35 @@ describe Wareki::StdExt do
     expect(Date._parse('completely invalid date')).to eq({})
   end
 
+  it 'skips wareki parsing for obviously non-wareki strings' do
+    expect(Date.parse('2020-01-01')).to eq Date.new(2020, 1, 1)
+    expect(Date._parse('2020-01-01')).to eq({year: 2020, mon: 1, mday: 1})
+    expect(Date.parse('弥生')).to eq Date.new(Date.today.year, 3, 1)
+  end
+
+  it 'raises on nonexistent wareki dates instead of falling back' do
+    expect { Date.parse('天保1年2月30日') }.to raise_error(Wareki::InvalidDate)
+    expect { Date.parse('明治5年12月3日') }.to raise_error(Wareki::InvalidDate)
+    expect { Date.parse('平成12年13月3日') }.to raise_error(Wareki::InvalidDate)
+    expect(Date._parse('平成12年2月30日')).to be_a(Hash)
+  end
+
   it 'have Date::JAPAN' do
     expect(Date::JAPAN).to eq Wareki::GREGORIAN_START
+  end
+
+  it 'does not misfire wareki conversion on escaped or invalid %J' do
+    d = Date.new(100, 1, 1, Date::GREGORIAN)
+    expect(d.strftime('x%%JF')).to eq 'x%JF'
+    expect(d.strftime('x%Jz')).to eq 'x%Jz'
+    expect { d.strftime('%JF') }.to raise_error(Wareki::UnsupportedDateRange)
+  end
+
+  it 'supports wareki directives on DateTime' do
+    dt = DateTime.new(2019, 5, 4, 13, 45, 6)
+    expect(dt.strftime('%JF')).to eq '令和元年五月四日'
+    expect(dt.strftime('%JF %H:%M:%S')).to eq '令和元年五月四日 13:45:06'
+    expect(dt.strftime('%F')).to eq '2019-05-04'
+    expect(dt.strftime).to eq dt._wareki_strftime_orig
   end
 end

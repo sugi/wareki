@@ -58,7 +58,10 @@ Style/DoubleNegation:
     - 'lib/wareki/date.rb'
 
 Metrics/ClassLength:
-  Max: 250
+  Max: 280
+
+Metrics/ModuleLength:
+  Max: 120
 
 Metrics/MethodLength:
   Max: 50
