@@ -268,4 +268,23 @@ describe Wareki::Date do
   it 'can parse U+F9A8 variant' do
     expect(Date.parse('令和3年5月4日')).to eq Date.parse('令和3年5月4日')
   end
+
+  it 'resolves last day of month consistently for any era notation' do
+    expect(described_class.parse('皇紀2532年10月晦日').day).to eq 30
+    expect(described_class.parse('明治5年10月晦日').day).to eq 30
+    expect(described_class.parse('12月晦日').day).to eq 31
+    expect(described_class.parse('紀元前1年12月晦日').to_date).to eq Date.new(-1, 12, 31)
+    expect(described_class.parse('西暦2000年2月晦日').to_date).to eq Date.new(2000, 2, 29)
+  end
+
+  it 'accepts nil era name as western calendar' do
+    expect(described_class.new(nil, 2, 12, 31).to_date).to eq Date.new(2, 12, 31)
+    expect(described_class.new(nil, 2020, 5, 4).to_date).to eq Date.new(2020, 5, 4)
+  end
+
+  it 'can format %JDK for pre-1873 western dates' do
+    expect(described_class.new('西暦', 300, 5, 15).strftime('%JDK')).to eq '十五'
+    expect(described_class.new('西暦', 300, 5, 31).strftime('%JDK')).to eq '晦'
+    expect(described_class.new('紀元前', 203, 12, 31).strftime('%JDK')).to eq '晦'
+  end
 end

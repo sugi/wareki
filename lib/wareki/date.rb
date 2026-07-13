@@ -52,7 +52,8 @@ module Wareki
 
       if match[:day]
         if match[:day] == '晦'
-          day = Utils.last_day_of_month(ERA_BY_NAME[era].year + year - 1, month, match[:is_leap])
+          civil_year = Utils.era_year_to_civil(era, year)
+          day = Utils.last_day_of_era_month(era, civil_year, month, !!match[:is_leap])
         else
           day = Utils.k2i(match[:day])
         end
@@ -87,23 +88,12 @@ module Wareki
     end
 
     def initialize(era_name, era_year, month = 1, day = 1, is_leap_month = false)
-      raise ArgumentError, "Undefined era '#{era_name}'" if
-        era_name.to_s != '' && era_name != '紀元前' && !ERA_BY_NAME[era_name]
-
+      @era_name = era_name.to_s
+      @era_year = era_year
       @month = month
       @day = day
       @is_leap_month = is_leap_month
-      @era_name = era_name
-      @era_year = era_year
-      if era_name.to_s == '' || era_name == '西暦'
-        @year = @era_year
-      elsif era_name.to_s == '紀元前'
-        @year = -@era_year
-      elsif %w(皇紀 神武天皇即位紀元).include? era_name
-        @year = era_year + IMPERIAL_START_YEAR
-      else
-        @year = ERA_BY_NAME[era_name].year + era_year - 1
-      end
+      @year = Utils.era_year_to_civil(@era_name, @era_year)
     end
 
     def imperial_year
@@ -128,7 +118,7 @@ module Wareki
 
     def month_index
       return month - 1 if
-        ['', '西暦', '紀元前'].include?(@era_name) || @year >= GREGORIAN_START_YEAR
+        WESTERN_ERA_NAMES.include?(@era_name) || @year >= GREGORIAN_START_YEAR
 
       yobj = YEAR_BY_NUM[@year] or
         raise UnsupportedDateRange, "Cannot get year info of #{inspect}"
@@ -137,10 +127,14 @@ module Wareki
       idx
     end
 
+    def last_day_of_month
+      Utils.last_day_of_era_month(@era_name, @year, month, leap_month?)
+    end
+
     def jd
       @jd and return @jd
 
-      ['', '西暦', '紀元前'].include?(@era_name) and
+      WESTERN_ERA_NAMES.include?(@era_name) and
         return @jd = ::Date.new(@year, month, day, ::Date::ITALY).jd
 
       @year >= GREGORIAN_START_YEAR and
@@ -212,7 +206,7 @@ module Wareki
           '元'
         elsif day == 1
           '朔'
-        elsif day == Utils.last_day_of_month(year, month, leap_month?)
+        elsif day == last_day_of_month
           '晦'
         else
           YaKansuji.to_kan(day, :simple)
