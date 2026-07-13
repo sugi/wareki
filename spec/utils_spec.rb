@@ -14,7 +14,8 @@ describe Wareki::Utils do
   it 'returns nil on missing era' do
     e = u.find_era(Date.new(655, 12, 10))
     expect(e).to be_nil
-    e = u.find_era(Date.new(686, 10, 2))
+    # 朱鳥の終端は使用終了日ではなく旧暦686年の年末 (manakai データ仕様)
+    e = u.find_era(Date.new(688, 10, 2))
     expect(e).to be_nil
   end
 
