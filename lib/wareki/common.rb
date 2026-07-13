@@ -81,6 +81,10 @@ module Wareki
          (?<alt_month>#{ALT_MONTH_NAME.join('|')})))?
     (?:(?<day>[元朔晦#{NUM_CHARS}]+)日|元旦)?
   }x.freeze
+  # REGEX が空でないマッチを返すには 年/月/日/元旦 か、「月」を含まない
+  # 月の別名 (弥生・師走) のいずれかが必要。それ以外は素の Date.parse に
+  # 直行させて monkey patch のオーバーヘッドを避ける。
+  PARSE_QUICK_FILTER = /[年月日]|元旦|弥生|師走/.freeze
 
   class UnsupportedDateRange < StandardError; end
 
@@ -88,7 +92,7 @@ module Wareki
 
   def parse_to_date(str, start = ::Date::ITALY)
     Date.parse(str).to_date(start)
-  rescue ArgumentError
+  rescue ArgumentError, UnsupportedDateRange
     ::Date.parse(str, true, start)
   end
 end

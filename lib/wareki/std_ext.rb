@@ -30,6 +30,8 @@ class Date
   class << self
     alias _wareki_parse_orig parse
     def parse(str = '-4712-01-01', comp = true, start = ::Date::ITALY)
+      str.to_s =~ Wareki::PARSE_QUICK_FILTER or
+        return ::Date._wareki_parse_orig(str, comp, start)
       Wareki::Date.parse(str).to_date(start)
     rescue ArgumentError, Wareki::UnsupportedDateRange
       ::Date._wareki_parse_orig(str, comp, start)
@@ -37,6 +39,8 @@ class Date
 
     alias _wareki__parse_orig _parse
     def _parse(str, comp = true)
+      str.to_s =~ Wareki::PARSE_QUICK_FILTER or
+        return ::Date._wareki__parse_orig(str, comp)
       di = Wareki::Date._parse(str)
       wdate = Wareki::Date.new(di[:era], di[:year], di[:month], di[:day], di[:is_leap])
     rescue ArgumentError, Wareki::UnsupportedDateRange

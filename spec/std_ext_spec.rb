@@ -20,6 +20,12 @@ describe Wareki::StdExt do
     expect(Date._parse('completely invalid date')).to eq({})
   end
 
+  it 'skips wareki parsing for obviously non-wareki strings' do
+    expect(Date.parse('2020-01-01')).to eq Date.new(2020, 1, 1)
+    expect(Date._parse('2020-01-01')).to eq({year: 2020, mon: 1, mday: 1})
+    expect(Date.parse('弥生')).to eq Date.new(Date.today.year, 3, 1)
+  end
+
   it 'have Date::JAPAN' do
     expect(Date::JAPAN).to eq Wareki::GREGORIAN_START
   end
