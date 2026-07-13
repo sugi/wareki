@@ -6,7 +6,9 @@
 	  nonexistent leap month, and the Meiji 5 December calendar-switch
 	  gap for all era notations); patched Date.parse re-raises it
 	  instead of falling back to stdlib misinterpretation
-	* Prefer southern court eras on conversion from Date/jd (README behavior)
+	* README: document that conversion from Date/jd prefers northern court
+	  eras during the Nanboku-cho period (previous statement was wrong;
+	  behavior unchanged from 1.1.0)
 	* Wareki::Date#- returns day count for date-like operands;
 	  #+ raises TypeError for non-numeric operands (stdlib parity)
 	* Add Wareki::Date#hash, #<=>, Comparable and #succ

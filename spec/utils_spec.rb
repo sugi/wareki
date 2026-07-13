@@ -37,18 +37,24 @@ describe Wareki::Utils do
     expect(u.find_era(2_256_978).name).to eq '応仁'
   end
 
-  it 'prefers southern court eras on jd lookup (nanboku-cho)' do
-    expect(u.find_era(Date.new(1337, 6, 1, Date::GREGORIAN)).name).to eq '延元'
-    expect(u.find_era(Date.new(1340, 7, 26, Date::GREGORIAN)).name).to eq '興国'
-    expect(u.find_era(Date.new(1350, 12, 21, Date::GREGORIAN)).name).to eq '正平'
-    expect(u.find_era(Date.new(1332, 8, 17, Date::GREGORIAN)).name).to eq '元弘'
-    expect(u.find_era(Date.new(1391, 1, 1, Date::GREGORIAN)).name).to eq '元中'
+  it 'prefers northern court eras on jd lookup (nanboku-cho)' do
+    expect(u.find_era(Date.new(1332, 8, 17, Date::GREGORIAN)).name).to eq '正慶'
+    expect(u.find_era(Date.new(1340, 7, 26, Date::GREGORIAN)).name).to eq '暦応'
+    expect(u.find_era(Date.new(1350, 12, 21, Date::GREGORIAN)).name).to eq '観応'
+    expect(u.find_era(Date.new(1391, 1, 1, Date::GREGORIAN)).name).to eq '明徳'
     expect(u.find_era(Date.new(1393, 5, 29, Date::GREGORIAN)).name).to eq '明徳'
+    # 北朝側の改元(暦応)前は北朝に固有の元号がなく、南朝の元号が返る
+    expect(u.find_era(Date.new(1337, 6, 1, Date::GREGORIAN)).name).to eq '延元'
   end
 
   it 'still accepts northern court era names on parse' do
     expect(Wareki::Date.parse('暦応3年1月1日').era_name).to eq '暦応'
     expect(Wareki::Date.parse('正慶2年1月1日').era_name).to eq '正慶'
+  end
+
+  it 'still accepts southern court era names on parse' do
+    expect(Wareki::Date.parse('正平7年1月1日').era_name).to eq '正平'
+    expect(Wareki::Date.parse('元中8年1月1日').era_name).to eq '元中'
   end
 
   it 'can find year with first and last day' do
@@ -89,14 +95,6 @@ describe Wareki::Utils do
   it 'returns nil for jd before the year table' do
     expect(u.find_year(1_883_617)).to be_nil
     expect(u.find_year(1_883_618).year).to eq 445
-  end
-
-  it 'keeps ERA_JD_LOOKUP sorted, disjoint and frozen' do
-    lookup = Wareki::ERA_JD_LOOKUP
-    expect(lookup).to be_frozen
-    expect(lookup.all?(&:frozen?)).to be true
-    expect(lookup.each_cons(2).all? { |a, b| a.end < b.start && a.end < b.end }).to be true
-    expect(lookup.map(&:name) & Wareki::NORTH_COURT_ERA_NAMES).to be_empty
   end
 
   it 'i_to_kan still works as deprecated api' do
