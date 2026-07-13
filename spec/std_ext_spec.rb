@@ -95,6 +95,12 @@ describe Wareki::StdExt do
     expect(t.to_wareki_date).to eq Wareki::Date.parse('令和元年五月四日')
   end
 
+  it 'expands %JT but raises on %J date directives for pre-era times' do
+    t = Time.new(100, 1, 2, 3, 4, 5)
+    expect(t.strftime('%JTF')).to eq '三時四分五秒'
+    expect { t.strftime('%JF') }.to raise_error(Wareki::UnsupportedDateRange)
+  end
+
   it 'supports wareki time directives on DateTime' do
     dt = DateTime.new(2019, 5, 4, 13, 45, 6)
     expect(dt.strftime('%JF %JTF')).to eq '令和元年五月四日 十三時四十五分六秒'

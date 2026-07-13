@@ -107,6 +107,7 @@ describe Wareki::Utils do
     expect(u.normalize_time('午後三時')).to eq '15:00'
     expect(u.normalize_time('午後三時半')).to eq '15:30'
     expect(u.normalize_time('午前十時 五分')).to eq '10:05'
+    expect(u.normalize_time('午前十時　五分')).to eq '10:05'
     expect(u.normalize_time('午後 十一時 五十九分 五十九秒')).to eq '23:59:59'
     expect(u.normalize_time('正午')).to eq '12:00'
     expect(u.normalize_time('零時')).to eq '00:00'
