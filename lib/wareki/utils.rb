@@ -7,6 +7,7 @@ module Wareki
   module Utils
     TIME_FORMAT_DIRECTIVE_REGEX = /%J(-|[_0]{0,2}[0-9]*|)(T(?:[fF]|[HMS]k?))/.freeze
     TIME_FORMAT_EXPANSION_REGEX = /(?<!%)(?:%%)*\K#{TIME_FORMAT_DIRECTIVE_REGEX}/.freeze
+    SIMPLE_KANSUJI_CACHE = (0..99).map { |num| YaKansuji.to_kan(num, :simple).freeze }.freeze
 
     module_function
 
@@ -137,6 +138,12 @@ module Wareki
       end
     end
 
+    def to_simple_kan(num)
+      return SIMPLE_KANSUJI_CACHE[num].dup if num >= 0 && num < SIMPLE_KANSUJI_CACHE.length
+
+      YaKansuji.to_kan(num, :simple)
+    end
+
     # 日本語の時刻表記 (漢数字・全角数字の時分秒、午前/午後、半、正午) を
     # 等価な "HH:MM(:SS)" 表記へ置換する。値の範囲チェックは行わず、
     # 妥当性判断は Ruby 標準パーサに委ねる (二十五時 -> "25:00")。
@@ -179,14 +186,13 @@ module Wareki
         nf = number_format(opt)
         Kernel.format("#{nf}時#{nf}分#{nf}秒", time.hour, time.min, time.sec)
       when :TF
-        "#{YaKansuji.to_kan(time.hour, :simple)}時#{YaKansuji.to_kan(time.min, :simple)}分" \
-        "#{YaKansuji.to_kan(time.sec, :simple)}秒"
+        "#{to_simple_kan(time.hour)}時#{to_simple_kan(time.min)}分#{to_simple_kan(time.sec)}秒"
       when :TH  then i2z(time.hour)
-      when :THk then YaKansuji.to_kan(time.hour, :simple)
+      when :THk then to_simple_kan(time.hour)
       when :TM  then i2z(time.min)
-      when :TMk then YaKansuji.to_kan(time.min, :simple)
+      when :TMk then to_simple_kan(time.min)
       when :TS  then i2z(time.sec)
-      when :TSk then YaKansuji.to_kan(time.sec, :simple)
+      when :TSk then to_simple_kan(time.sec)
       end
     end
 

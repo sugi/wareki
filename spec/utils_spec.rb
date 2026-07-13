@@ -115,6 +115,38 @@ describe Wareki::Utils do
     expect(u.normalize_time('平成元年五月四日十二時三十四分')).to eq '平成元年五月四日12:34'
   end
 
+  it 'uses cached simple kansuji for values from 0 through 99' do
+    expected = {
+      0 => '零', 1 => '一', 9 => '九', 10 => '十',
+      31 => '三十一', 59 => '五十九', 60 => '六十', 99 => '九十九',
+    }
+
+    expect(described_class::SIMPLE_KANSUJI_CACHE).to be_frozen
+    expect(described_class::SIMPLE_KANSUJI_CACHE).to all(be_frozen)
+    allow(YaKansuji).to receive(:to_kan).and_call_original
+    expected.each do |num, kansuji|
+      expect(u.to_simple_kan(num)).to eq kansuji
+    end
+    expect(YaKansuji).not_to have_received(:to_kan)
+
+    result = u.to_simple_kan(31)
+    expect(result).not_to be_frozen
+    result << '日'
+    expect(result).to eq '三十一日'
+    expect(described_class::SIMPLE_KANSUJI_CACHE[31]).to eq '三十一'
+  end
+
+  it 'delegates simple kansuji outside the cache range' do
+    expected_hundred = YaKansuji.to_kan(100, :simple)
+    expected_negative = YaKansuji.to_kan(-1, :simple)
+    allow(YaKansuji).to receive(:to_kan).and_call_original
+
+    expect(u.to_simple_kan(100)).to eq expected_hundred
+    expect(u.to_simple_kan(-1)).to eq expected_negative
+    expect(YaKansuji).to have_received(:to_kan).with(100, :simple).once
+    expect(YaKansuji).to have_received(:to_kan).with(-1, :simple).once
+  end
+
   it 'transliterates out-of-range times as-is' do
     expect(u.normalize_time('二十五時')).to eq '25:00'
     expect(u.normalize_time('十二時七十分')).to eq '12:70'
