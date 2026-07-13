@@ -8,7 +8,7 @@ require 'wareki/kansuji'
 module Wareki
   # Wareki date handling class, main implementation.
   class Date
-    attr_accessor :year, :month, :day, :era_year, :era_name
+    attr_reader :year, :month, :day, :era_year, :era_name
 
     def self.today
       jd(::Date.today.jd)
@@ -91,7 +91,7 @@ module Wareki
     end
 
     def imperial_year=(v)
-      @year = v - IMPERIAL_START_YEAR
+      self.year = v + IMPERIAL_START_YEAR
     end
 
     def leap_month?
@@ -99,7 +99,36 @@ module Wareki
     end
 
     def leap_month=(v)
+      @jd = nil
       @is_leap_month = v
+    end
+
+    def year=(v)
+      @jd = nil
+      @year = v
+      @era_year = Utils.civil_to_era_year(@era_name, v)
+    end
+
+    def month=(v)
+      @jd = nil
+      @month = v
+    end
+
+    def day=(v)
+      @jd = nil
+      @day = v
+    end
+
+    def era_year=(v)
+      @jd = nil
+      @era_year = v
+      @year = Utils.era_year_to_civil(@era_name, v)
+    end
+
+    def era_name=(v)
+      @jd = nil
+      @era_name = v.to_s
+      @year = Utils.era_year_to_civil(@era_name, @era_year)
     end
 
     def __set_jd(v)

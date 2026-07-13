@@ -329,4 +329,39 @@ describe Wareki::Date do
     expect(described_class.new('西暦', 300, 5, 31).strftime('%JDK')).to eq '晦'
     expect(described_class.new('紀元前', 203, 12, 31).strftime('%JDK')).to eq '晦'
   end
+
+  it 'invalidates cached jd on attribute writes' do
+    d = described_class.date(Date.new(2025, 7, 12))
+    d.month = 1
+    expect(d.to_date).to eq Date.new(2025, 1, 12)
+    d.day = 3
+    expect(d.to_date).to eq Date.new(2025, 1, 3)
+    d.era_year = 5
+    expect(d.to_date).to eq Date.new(2023, 1, 3)
+    d.era_name = '平成'
+    expect(d.to_date).to eq Date.new(1993, 1, 3)
+    d.year = 2000
+    expect(d.era_year).to eq 12
+    expect(d.to_date).to eq Date.new(2000, 1, 3)
+  end
+
+  it 'invalidates cached jd on leap month write' do
+    d = described_class.new('元仁', 1, 7, 1)
+    d.jd
+    d.leap_month = true
+    expect(d.jd).to eq described_class.parse('元仁元年閏七月朔日').jd
+  end
+
+  it 'raises invalid date on jd conversion after inconsistent writes' do
+    d = described_class.date(Date.new(2025, 1, 31))
+    d.month = 13
+    expect { d.jd }.to raise_error(ArgumentError, /invalid date/)
+  end
+
+  it 'can set imperial year' do
+    d = described_class.today
+    d.imperial_year = 2685
+    expect(d.imperial_year).to eq 2685
+    expect(d.year).to eq 2025
+  end
 end
