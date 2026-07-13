@@ -5,6 +5,11 @@ require 'wareki/date'
 module Wareki
   # :nodoc:
   module StdExt
+    module_function
+
+    def wareki_directive?(format)
+      !!(format.to_str.gsub('%%', '') =~ Wareki::Date::FORMAT_DIRECTIVE_REGEX)
+    end
   end
 end
 
@@ -18,11 +23,8 @@ class Date
 
   alias _wareki_strftime_orig strftime
   def strftime(format = '%F')
-    if format.index('%J')
-      to_wareki_date.strftime(format)
-    else
-      _wareki_strftime_orig(format)
-    end
+    return _wareki_strftime_orig(format) unless Wareki::StdExt.wareki_directive?(format)
+    _wareki_strftime_orig(to_wareki_date.expand_wareki_format(format))
   end
 
   class << self
@@ -42,5 +44,14 @@ class Date
     else
       ::Date._wareki__parse_orig(str.sub(Wareki::REGEX, wdate.strftime('%F ')), comp)
     end
+  end
+end
+
+# :nodoc:
+class DateTime
+  alias _wareki_strftime_orig strftime
+  def strftime(format = '%FT%T%:z')
+    return _wareki_strftime_orig(format) unless Wareki::StdExt.wareki_directive?(format)
+    _wareki_strftime_orig(to_wareki_date.expand_wareki_format(format))
   end
 end

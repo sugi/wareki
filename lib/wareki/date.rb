@@ -195,8 +195,14 @@ module Wareki
       to_date.to_time
     end
 
+    FORMAT_DIRECTIVE_REGEX = /%J(-|[_0]{0,2}[0-9]*|)([fFyYegGoOiImMsSlLdD][kK]?)/.freeze
+
+    def expand_wareki_format(format_str)
+      format_str.to_str.gsub(FORMAT_DIRECTIVE_REGEX) { format($2, $1) || $& }
+    end
+
     def strftime(format_str = '%JF')
-      ret = format_str.to_str.gsub(/%J(-|[_0]{0,2}[0-9]*|)([fFyYegGoOiImMsSlLdD][kK]?)/) { format($2, $1) || $& }
+      ret = expand_wareki_format(format_str)
       ret.index('%') or return ret
       d = to_date
       d.respond_to?(:_wareki_strftime_orig) ? d._wareki_strftime_orig(ret) : d.strftime(ret)

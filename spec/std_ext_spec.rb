@@ -23,4 +23,19 @@ describe Wareki::StdExt do
   it 'have Date::JAPAN' do
     expect(Date::JAPAN).to eq Wareki::GREGORIAN_START
   end
+
+  it 'does not misfire wareki conversion on escaped or invalid %J' do
+    d = Date.new(100, 1, 1, Date::GREGORIAN)
+    expect(d.strftime('x%%JF')).to eq 'x%JF'
+    expect(d.strftime('x%Jz')).to eq 'x%Jz'
+    expect { d.strftime('%JF') }.to raise_error(Wareki::UnsupportedDateRange)
+  end
+
+  it 'supports wareki directives on DateTime' do
+    dt = DateTime.new(2019, 5, 4, 13, 45, 6)
+    expect(dt.strftime('%JF')).to eq '令和元年五月四日'
+    expect(dt.strftime('%JF %H:%M:%S')).to eq '令和元年五月四日 13:45:06'
+    expect(dt.strftime('%F')).to eq '2019-05-04'
+    expect(dt.strftime).to eq dt._wareki_strftime_orig
+  end
 end
