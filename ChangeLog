@@ -16,7 +16,8 @@
 	* Parse apostrophe leap-month markers so %Jf/%Jm output round-trips
 	* Fix misokka (晦日) parsing for 皇紀/西暦/紀元前/era-less dates
 	* DateTime#strftime now supports %J directives
-	* Escaped %%J or invalid %J sequences no longer trigger conversion
+	* Escaped %%J or invalid %J sequences no longer trigger conversion;
+	  Wareki::Date#strftime honors %% escapes too
 	* Fast-path non-wareki strings in patched Date.parse/_parse
 	* Wareki.parse_to_date falls back on UnsupportedDateRange too
 	* Fix deprecated Utils.i_to_kan (was calling undefined method)

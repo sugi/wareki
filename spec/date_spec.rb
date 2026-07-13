@@ -275,6 +275,13 @@ describe Wareki::Date do
     expect(described_class.parse('天和3年5月4日').leap_month?).to be false
   end
 
+  it 'honors %% escapes like the patched Date#strftime' do
+    d = described_class.new('天和', 3, 5, 4, true)
+    expect(d.strftime('x%%JF')).to eq 'x%JF'
+    expect(d.strftime('%%%JF')).to eq '%天和三年閏五月四日'
+    expect(d.strftime('rate: 100%% %JF')).to eq 'rate: 100% 天和三年閏五月四日'
+  end
+
   it 'can be formatted having compatibility with standard Date#strftime' do
     wareki_date = described_class.new('令和', 1, 5, 4)
     date = Date.new(2019, 5, 4)
