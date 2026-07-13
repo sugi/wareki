@@ -1,3 +1,5 @@
+require 'time'
+
 describe Wareki::StdExt do
   it 'overrides strftime' do
     d = Date.new(2015, 8, 1)
@@ -33,6 +35,32 @@ describe Wareki::StdExt do
     expect(Date._parse('平成12年2月30日')).to be_a(Hash)
   end
 
+  it 'parses japanese time notations via _parse' do
+    expect(Date._parse('平成元年5月4日 十二時三十四分五十六秒')).to eq(
+      {year: 1989, mon: 5, mday: 4, hour: 12, min: 34, sec: 56}
+    )
+    expect(Date._parse('12時34分56秒')).to eq({hour: 12, min: 34, sec: 56})
+    expect(Date._parse('午後三時半')).to eq({hour: 15, min: 30})
+    expect(Date._parse('正午')).to eq({hour: 12, min: 0})
+  end
+
+  it 'makes Time.parse handle wareki dates with kansuji time' do
+    expect(Time.parse('平成元年五月四日十二時三十四分五十六秒')).to eq Time.parse('1989-05-04 12:34:56')
+    expect(Time.parse('平成元年5月4日 午後三時')).to eq Time.parse('1989-05-04 15:00')
+    expect(Time.parse('令和三年一月一日 零時五分')).to eq Time.parse('2021-01-01 00:05')
+    expect(Time.parse('㍻一〇年 肆月 晦日 正午')).to eq Time.parse('1998-04-30 12:00')
+  end
+
+  it 'rejects out-of-range kansuji times like their ascii equivalents' do
+    expect { Time.parse('平成元年5月4日 二十五時') }.to raise_error(ArgumentError)
+    expect { Time.parse('十二時七十分') }.to raise_error(ArgumentError)
+    expect { Date.parse('12時34分') }.to raise_error(ArgumentError)
+  end
+
+  it 'still parses dates when a time notation follows' do
+    expect(Date.parse('平成三十一年四月三十日 午後十一時五十九分')).to eq Date.new(2019, 4, 30)
+  end
+
   it 'have Date::JAPAN' do
     expect(Date::JAPAN).to eq Wareki::GREGORIAN_START
   end
@@ -50,5 +78,37 @@ describe Wareki::StdExt do
     expect(dt.strftime('%JF %H:%M:%S')).to eq '令和元年五月四日 13:45:06'
     expect(dt.strftime('%F')).to eq '2019-05-04'
     expect(dt.strftime).to eq dt._wareki_strftime_orig
+  end
+
+  it 'supports wareki time directives on Time' do
+    t = Time.new(2019, 5, 4, 13, 45, 6)
+    expect(t.strftime('%JF %JTF')).to eq '令和元年五月四日 十三時四十五分六秒'
+    expect(t.strftime('%JTf')).to eq '13時45分06秒'
+    expect(t.strftime('%JTHk時%JTMk分')).to eq '十三時四十五分'
+    expect(t.strftime('%F %H:%M:%S')).to eq '2019-05-04 13:45:06'
+    expect(t.strftime('x%%JTF')).to eq 'x%JTF'
+    expect(t.strftime('x%%JF')).to eq 'x%JF'
+  end
+
+  it 'adds Time#to_wareki_date' do
+    t = Time.new(2019, 5, 4, 13, 45, 6)
+    expect(t.to_wareki_date).to eq Wareki::Date.parse('令和元年五月四日')
+  end
+
+  it 'expands %JT but raises on %J date directives for pre-era times' do
+    t = Time.new(100, 1, 2, 3, 4, 5)
+    expect(t.strftime('%JTF')).to eq '三時四分五秒'
+    expect { t.strftime('%JF') }.to raise_error(Wareki::UnsupportedDateRange)
+  end
+
+  it 'supports wareki time directives on DateTime' do
+    dt = DateTime.new(2019, 5, 4, 13, 45, 6)
+    expect(dt.strftime('%JF %JTF')).to eq '令和元年五月四日 十三時四十五分六秒'
+    expect(dt.strftime('%JTf')).to eq '13時45分06秒'
+    expect(dt.strftime).to eq dt._wareki_strftime_orig
+  end
+
+  it 'keeps %JT literal on Date' do
+    expect(Date.new(2019, 5, 4).strftime('%JTF')).to eq '%JTF'
   end
 end
