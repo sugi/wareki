@@ -15,11 +15,18 @@
 	* README: document that conversion from Date/jd prefers northern court
 	  eras during the Nanboku-cho period (previous statement was wrong;
 	  behavior unchanged from 1.1.0)
+	* Update kyuureki calendar data (regenerated from
+	  manakai/data-locale); corrects month boundaries of some
+	  historical years
 	* Wareki::Date#- returns day count for date-like operands;
 	  #+ raises TypeError for non-numeric operands (stdlib parity)
+	* Support date calculation with ActiveSupport::Duration
+	  (was NotImplementedError)
 	* Add Wareki::Date#hash, #<=>, Comparable and #succ
 	* Invalidate cached jd on attribute writes; writers keep
 	  year/era_year consistent
+	* Freeze era definition structs to prevent accidental mutation
+	  of shared state
 	* Fix imperial_year= setter (sign error)
 	* Parse apostrophe leap-month markers so %Jf/%Jm output round-trips
 	* Fix misokka (晦日) parsing for 皇紀/西暦/紀元前/era-less dates
@@ -30,8 +37,6 @@
 	* Wareki.parse_to_date falls back on UnsupportedDateRange too
 	* Fix deprecated Utils.i_to_kan (was calling undefined method)
 	* gemspec: SPDX license identifier (BSD-2-Clause)
-
-2025-03-10  Tatsuki Sugiura  <sugi@nemui.org>
 
 	[ by masa.kunikata <masa.kunikata@gmail.com> ]
 	* Add zero padding format feature
