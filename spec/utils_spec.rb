@@ -104,4 +104,12 @@ describe Wareki::Utils do
     expect { result = u.i_to_kan(5) }.to output(/DEPRECATED/).to_stderr
     expect(result).to eq '五'
   end
+
+  it 'freezes era definitions' do
+    expect(Wareki::ERA_DEFS).to all(be_frozen)
+    expect(Wareki::ERA_NORTH_DEFS).to all(be_frozen)
+    expect(Wareki::ERA_BY_NAME['皇紀']).to be_frozen
+    expect(Wareki::ERA_BY_NAME['西暦']).to be_frozen
+    expect(u.find_era(Date.new(2019, 5, 1))).to be_frozen
+  end
 end

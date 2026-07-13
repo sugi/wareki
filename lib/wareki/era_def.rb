@@ -252,7 +252,7 @@ module Wareki
     Era.new("昭和", 1926, 2424875, 2447534),
     Era.new("平成", 1989, 2447535, 2458604),
     Era.new("令和", 2019, 2458605, DAY_MAX),
-  ].freeze
+  ].each(&:freeze).freeze
   ERA_NORTH_DEFS = [
     Era.new("大化", 645, 1956842, 1958551),
     Era.new("白雉", 650, 1958551, 1960259),
@@ -502,5 +502,5 @@ module Wareki
     Era.new("昭和", 1926, 2424875, 2447534),
     Era.new("平成", 1989, 2447535, 2458604),
     Era.new("令和", 2019, 2458605, DAY_MAX),
-  ].freeze
+  ].each(&:freeze).freeze
 end
