@@ -12,21 +12,6 @@ module Wareki
   # 明治5年12月 (テーブル最終月) はグレゴリオ暦切替のため LAST_MONTH_DAYS
   # (= 2) 日で打ち切られており、大小マスクには反映されていない。
   module Calendar
-    # 一時ブートストラップ: 旧形式 YEAR_DEFS から詰め替えて定数を構築する。
-    # build-util/gen-jp-cal-def.rb が生成する新形式 calendar_def.rb に置換予定。
-    YEAR_MIN = YEAR_DEFS.first.year
-    YEAR_MAX = YEAR_DEFS.last.year
-    JD_MIN = YEAR_DEFS.first.month_starts.first
-    JD_MAX = YEAR_DEFS.last.end
-    LAST_MONTH_DAYS = YEAR_DEFS.last.month_days.last
-    PACKED = YEAR_DEFS.map do |y|
-      mask = 0
-      y.month_days.each_with_index { |d, i| mask |= (1 << i) if d == 30 }
-      ((y.leap_month || 0) << 36) | ((y.month_starts.size - 12) << 35) |
-        (mask << 22) | y.month_starts.first
-    end.freeze
-    # ブートストラップここまで
-
     module_function
 
     def covers_year?(year)
