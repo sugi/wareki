@@ -59,10 +59,10 @@ describe Wareki::Utils do
   end
 
   it 'can find year with first and last day' do
-    expect(u.find_year(2_275_903).year).to eq 1519
-    expect(u.find_year(2_276_257).year).to eq 1519
-    expect(u.find_year(2_293_061).year).to eq 1566
-    expect(u.find_year(2_293_443).year).to eq 1566
+    expect(u.find_date_ary(2_275_903)[0]).to eq 1519
+    expect(u.find_date_ary(2_276_257)[0]).to eq 1519
+    expect(u.find_date_ary(2_293_061)[0]).to eq 1566
+    expect(u.find_date_ary(2_293_443)[0]).to eq 1566
   end
 
   it 'converts era year to civil year' do
@@ -93,9 +93,9 @@ describe Wareki::Utils do
     expect(u.last_day_of_era_month('令和', 2021, 2, false)).to eq 28
   end
 
-  it 'returns nil for jd before the year table' do
-    expect(u.find_year(1_883_617)).to be_nil
-    expect(u.find_year(1_883_618).year).to eq 445
+  it 'rejects jd before the year table' do
+    expect { u.find_date_ary(1_883_617) }.to raise_error(Wareki::UnsupportedDateRange)
+    expect(u.find_date_ary(1_883_618)).to eq [445, 1, 1, false]
   end
 
   it 'normalizes japanese time notations' do
@@ -224,19 +224,8 @@ describe Wareki::Utils do
     expect(u.find_era(Date.new(2019, 5, 1))).to be_frozen
   end
 
-  it 'deep freezes calendar year definitions' do
-    year_def = Wareki::YEAR_DEFS.first
-
-    expect(Wareki::YEAR_DEFS).to be_frozen
-    expect(Wareki::YEAR_DEFS).to all(be_frozen)
-    expect(Wareki::YEAR_DEFS.map(&:month_starts)).to all(be_frozen)
-    expect(Wareki::YEAR_DEFS.map(&:month_days)).to all(be_frozen)
-    expect(Wareki::YEAR_BY_NUM[year_def.year]).to equal year_def
-    expect(Wareki::YEAR_BY_NUM[year_def.year]).to be_frozen
-
-    expect { year_def.month_starts << year_def.start }.to raise_error(RuntimeError)
-    expect { year_def.month_days << 30 }.to raise_error(RuntimeError)
-    expect { year_def.year = 0 }.to raise_error(RuntimeError)
+  it 'freezes calendar definitions' do
+    expect(Wareki::Calendar::PACKED).to be_frozen
   end
 
   it 'keeps historical lunisolar conversion working with frozen definitions' do

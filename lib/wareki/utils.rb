@@ -24,11 +24,8 @@ module Wareki
     end
 
     def _last_day_of_month_from_defs(year, month, is_leap)
-      yobj = YEAR_BY_NUM[year] or
+      Calendar.last_day_of_month(year, month, is_leap) or
         raise UnsupportedDateRange, "Cannot find year #{year}"
-      month_idx = month - 1
-      month_idx += 1 if is_leap || (yobj.leap_month && yobj.leap_month < month)
-      yobj.month_days[month_idx]
     end
 
     def era_year_to_civil(era_name, era_year)
@@ -95,24 +92,8 @@ module Wareki
       d.jd >= GREGORIAN_START and
         return [d.year, d.month, d.day, false]
 
-      yobj = find_year(d) or raise UnsupportedDateRange, "Unsupported date: #{d.inspect}"
-      month = 0
-      if yobj.month_starts.last <= d.jd
-        month = yobj.month_starts.count
-      else
-        month = yobj.month_starts.find_index { |m| d.jd <= (m - 1) }
-      end
-      month_start = yobj.month_starts[month - 1]
-      is_leap = (yobj.leap_month == (month - 1))
-      yobj.leap_month && yobj.leap_month < month and
-        month -= 1
-      [yobj.year, month, d.jd - month_start + 1, is_leap]
-    end
-
-    def find_year(d)
-      jd = _to_jd(d)
-      jd < YEAR_DEFS.first.start and return nil
-      YEAR_DEFS.bsearch { |y| y.end >= jd }
+      Calendar.find_date_ary(d.jd) or
+        raise UnsupportedDateRange, "Unsupported date: #{d.inspect}"
     end
 
     def find_era(d)

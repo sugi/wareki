@@ -1,5 +1,15 @@
 2026-07-13  Tatsuki Sugiura  <sugi@nemui.org>
 
+	* Version: 2.1.0
+	* Shrink in-memory kyuureki calendar table to ~1/48 (bit-packed
+	  one-integer-per-year representation in new internal module
+	  Wareki::Calendar); calendar definitions now load ~30x faster
+	* Remove internal constants Wareki::YEAR_DEFS, Wareki::YEAR_BY_NUM,
+	  Wareki::Year and Wareki::Utils.find_year
+	* required_ruby_version is now >= 2.3
+
+2026-07-13  Tatsuki Sugiura  <sugi@nemui.org>
+
 	* Version: 2.0.0
 	* Time.parse now understands Japanese kansuji/zenkaku time notations
 	  (十二時三十四分五十六秒, 午後三時半, 正午, ...) via the patched

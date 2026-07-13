@@ -145,11 +145,9 @@ module Wareki
       return month - 1 if
         WESTERN_ERA_NAMES.include?(@era_name) || @year >= GREGORIAN_START_YEAR
 
-      yobj = YEAR_BY_NUM[@year] or
+      Calendar.covers_year?(@year) or
         raise UnsupportedDateRange, "Cannot get year info of #{inspect}"
-      idx = month - 1
-      idx += 1 if leap_month? || (yobj.leap_month && month > yobj.leap_month)
-      idx
+      Calendar.month_index(@year, month, leap_month?)
     end
 
     def last_day_of_month
@@ -163,10 +161,10 @@ module Wareki
         raise InvalidDate, "invalid date (day out of range): #{inspect}"
       if !WESTERN_ERA_NAMES.include?(@era_name) && @year < GREGORIAN_START_YEAR
         # 暦テーブル外の年は従来どおり jd 変換時の UnsupportedDateRange に委ねる
-        yobj = YEAR_BY_NUM[@year] or return
-        !leap_month? || yobj.leap_month == month or
+        Calendar.covers_year?(@year) or return
+        !leap_month? || Calendar.leap_month(@year) == month or
           raise InvalidDate, "invalid date (no leap month): #{inspect}"
-        day <= yobj.month_days[month_index] or
+        day <= Calendar.last_day_of_month(@year, month, leap_month?) or
           raise InvalidDate, "invalid date (day out of range): #{inspect}"
       else
         leap_month? and
@@ -186,9 +184,9 @@ module Wareki
       @year >= GREGORIAN_START_YEAR and
         return @jd = ::Date.new(@year, month, day, ::Date::GREGORIAN).jd
 
-      yobj = YEAR_BY_NUM[@year] or
+      @jd = Calendar.to_jd(@year, month, day, leap_month?) or
         raise UnsupportedDateRange, "Cannot convert to jd #{inspect}"
-      @jd = yobj.month_starts[month_index] + day - 1
+      @jd
     end
 
     def to_date(start = ::Date::ITALY)

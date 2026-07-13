@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'wareki/calendar_def'
+require 'wareki/calendar'
 require 'wareki/era_def'
 require 'date'
 # Wareki module common constants definitions
@@ -12,7 +12,6 @@ module Wareki
   WESTERN_ERA_NAMES = ['', '西暦', '紀元前'].freeze
   IMPERIAL_ERA_NAMES = %w(皇紀 神武天皇即位紀元).freeze
   DATE_INFINITY = ::Date.new(280_000_000, 12, 31) # Use 280000000 for jruby limitation...
-  YEAR_BY_NUM = Hash[*YEAR_DEFS.map { |y| [y.year, y] }.flatten].freeze
   KANJI_VARIANTS = {
     '宝' => '寳',
     '霊' => '靈',

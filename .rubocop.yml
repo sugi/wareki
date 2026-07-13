@@ -16,10 +16,10 @@ AllCops:
 
 Gemspec/RequiredRubyVersion:
   Exclude:
-    - 'wareki.gemspec' # Required to support 2.0
+    - 'wareki.gemspec' # Required to support 2.3
 
 Style/NumericPredicate:
-  EnforcedStyle: comparison # For ruby < 2.3
+  EnforcedStyle: comparison
 
 Gemspec/RubyVersionGlobalsUsage:
   Exclude:
