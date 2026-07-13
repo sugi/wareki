@@ -16,7 +16,7 @@ Pure ruby library of Wareki (Japanese calendar date) that supports string parsin
 formatting, and bi-directional convertion with standard Date class.
   DESC
   spec.homepage      = 'https://github.com/sugi/wareki'
-  spec.license       = 'BSD'
+  spec.license       = 'BSD-2-Clause'
 
   spec.files         = Dir['lib/**/*.rb'] + %w(LICENSE README.md ChangeLog)
   # spec.bindir        = "exe"

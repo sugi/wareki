@@ -90,4 +90,10 @@ describe Wareki::Utils do
     expect(u.find_year(1_883_617)).to be_nil
     expect(u.find_year(1_883_618).year).to eq 445
   end
+
+  it 'i_to_kan still works as deprecated api' do
+    result = nil
+    expect { result = u.i_to_kan(5) }.to output(/DEPRECATED/).to_stderr
+    expect(result).to eq '五'
+  end
 end
