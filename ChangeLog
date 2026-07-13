@@ -18,6 +18,11 @@
 	* Update kyuureki calendar data (regenerated from
 	  manakai/data-locale); corrects month boundaries of some
 	  historical years
+	* Era definitions are now generated from manakai/data-locale
+	  era-defs.json instead of the Wikipedia era list page
+	  (build-util/gen-era-def.rb); corrects 正平/建徳/文中 boundaries,
+	  白雉/朱鳥 now cover until the end of their last kyuureki year,
+	  and ERA_NORTH_DEFS 元徳 now ends at 正慶 transition
 	* Wareki::Date#- returns day count for date-like operands;
 	  #+ raises TypeError for non-numeric operands (stdlib parity)
 	* Support date calculation with ActiveSupport::Duration
