@@ -1,3 +1,5 @@
+require 'time'
+
 describe Wareki::StdExt do
   it 'overrides strftime' do
     d = Date.new(2015, 8, 1)
@@ -31,6 +33,32 @@ describe Wareki::StdExt do
     expect { Date.parse('明治5年12月3日') }.to raise_error(Wareki::InvalidDate)
     expect { Date.parse('平成12年13月3日') }.to raise_error(Wareki::InvalidDate)
     expect(Date._parse('平成12年2月30日')).to be_a(Hash)
+  end
+
+  it 'parses japanese time notations via _parse' do
+    expect(Date._parse('平成元年5月4日 十二時三十四分五十六秒')).to eq(
+      {year: 1989, mon: 5, mday: 4, hour: 12, min: 34, sec: 56}
+    )
+    expect(Date._parse('12時34分56秒')).to eq({hour: 12, min: 34, sec: 56})
+    expect(Date._parse('午後三時半')).to eq({hour: 15, min: 30})
+    expect(Date._parse('正午')).to eq({hour: 12, min: 0})
+  end
+
+  it 'makes Time.parse handle wareki dates with kansuji time' do
+    expect(Time.parse('平成元年五月四日十二時三十四分五十六秒')).to eq Time.parse('1989-05-04 12:34:56')
+    expect(Time.parse('平成元年5月4日 午後三時')).to eq Time.parse('1989-05-04 15:00')
+    expect(Time.parse('令和三年一月一日 零時五分')).to eq Time.parse('2021-01-01 00:05')
+    expect(Time.parse('㍻一〇年 肆月 晦日 正午')).to eq Time.parse('1998-04-30 12:00')
+  end
+
+  it 'rejects out-of-range kansuji times like their ascii equivalents' do
+    expect { Time.parse('平成元年5月4日 二十五時') }.to raise_error(ArgumentError)
+    expect { Time.parse('十二時七十分') }.to raise_error(ArgumentError)
+    expect { Date.parse('12時34分') }.to raise_error(ArgumentError)
+  end
+
+  it 'still parses dates when a time notation follows' do
+    expect(Date.parse('平成三十一年四月三十日 午後十一時五十九分')).to eq Date.new(2019, 4, 30)
   end
 
   it 'have Date::JAPAN' do

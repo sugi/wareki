@@ -31,6 +31,7 @@ class Date
   class << self
     alias _wareki_parse_orig parse
     def parse(str = '-4712-01-01', comp = true, start = ::Date::ITALY)
+      str = Wareki::Utils.normalize_time(str)
       str.to_s =~ Wareki::PARSE_QUICK_FILTER or
         return ::Date._wareki_parse_orig(str, comp, start)
       Wareki::Date.parse(str).to_date(start)
@@ -42,6 +43,7 @@ class Date
 
     alias _wareki__parse_orig _parse
     def _parse(str, comp = true)
+      str = Wareki::Utils.normalize_time(str)
       str.to_s =~ Wareki::PARSE_QUICK_FILTER or
         return ::Date._wareki__parse_orig(str, comp)
       di = Wareki::Date._parse(str)
