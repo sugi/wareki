@@ -8,6 +8,8 @@ require 'wareki/kansuji'
 module Wareki
   # Wareki date handling class, main implementation.
   class Date
+    include Comparable
+
     attr_reader :year, :month, :day, :era_year, :era_name
 
     def self.today
@@ -284,22 +286,45 @@ module Wareki
       true
     end
 
+    def hash
+      [self.class, @era_name, @era_year, @year, @month, @day, leap_month?].hash
+    end
+
+    def <=>(other)
+      ojd = _jd_if_date_like(other)
+      ojd = other if ojd.nil? && other.is_a?(Numeric)
+      ojd.nil? and return nil
+      jd <=> ojd
+    end
+
+    def succ
+      self + 1
+    end
+
     def -(other)
-      self.class.jd jd - _to_jd_for_calc(other)
+      n = _to_days(other)
+      n.nil? or return self.class.jd(jd - n)
+      ojd = _jd_if_date_like(other)
+      ojd and return jd - ojd
+      raise TypeError, "Cannot subtract #{other.inspect} from Wareki::Date"
     end
 
     def +(other)
-      self.class.jd jd + _to_jd_for_calc(other)
+      n = _to_days(other)
+      n.nil? and raise TypeError, "Cannot add #{other.inspect} to Wareki::Date"
+      self.class.jd(jd + n)
     end
 
-    def _to_jd_for_calc(other)
+    def _to_days(other)
       # rubocop:disable Style/ClassEqualityComparison
       return other.in_days if other.class.name == 'ActiveSupport::Duration'
       # rubocop:enable Style/ClassEqualityComparison
+      other.is_a?(Numeric) ? other : nil
+    end
 
-      other.respond_to?(:to_date) and other = other.to_date
-      other.respond_to?(:jd) and other = other.jd
-      other
+    def _jd_if_date_like(other)
+      other.respond_to?(:to_date) && !other.is_a?(Numeric) and other = other.to_date
+      other.respond_to?(:jd) ? other.jd : nil
     end
   end
 end

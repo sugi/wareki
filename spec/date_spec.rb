@@ -1,3 +1,5 @@
+require 'set'
+
 describe Wareki::Date do
   matchings = {
     # civil date => wareki date
@@ -363,5 +365,35 @@ describe Wareki::Date do
     d.imperial_year = 2685
     expect(d.imperial_year).to eq 2685
     expect(d.year).to eq 2025
+  end
+
+  it 'behaves as a value object' do
+    a = described_class.parse('平成7年11月10日')
+    b = described_class.parse('平成7年11月10日')
+    expect(a.eql?(b)).to be true
+    expect(a.hash).to eq b.hash
+    expect({a => 1}[b]).to eq 1
+    expect(Set[a, b].size).to eq 1
+  end
+
+  it 'is comparable and supports ranges' do
+    a = described_class.parse('平成7年11月10日')
+    b = a + 1
+    expect(a < b).to be true
+    expect(a > b).to be false
+    expect([b, a].sort.first).to eq a
+    expect(a.between?(a - 1, b)).to be true
+    expect((a..b).to_a.length).to eq 2
+    expect(a < Date.new(1996, 1, 1)).to be true
+    expect(a <=> Object.new).to be_nil
+  end
+
+  it 'returns day count on subtracting date-like objects' do
+    a = described_class.parse('平成7年11月10日')
+    b = described_class.parse('平成7年11月1日')
+    expect(a - b).to eq 9
+    expect(a - a).to eq 0
+    expect(a - a.to_date).to eq 0
+    expect { a + a.to_date }.to raise_error(TypeError)
   end
 end
