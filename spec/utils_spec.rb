@@ -147,6 +147,20 @@ describe Wareki::Utils do
     expect(YaKansuji).to have_received(:to_kan).with(-1, :simple).once
   end
 
+  it 'delegates non-integer simple kansuji values' do
+    expected = {
+      nil => '零',
+      '1' => '一',
+      1.5 => '一',
+    }
+    allow(YaKansuji).to receive(:to_kan).and_call_original
+
+    expected.each do |value, kansuji|
+      expect(u.to_simple_kan(value)).to eq kansuji
+      expect(YaKansuji).to have_received(:to_kan).with(value, :simple).once
+    end
+  end
+
   it 'transliterates out-of-range times as-is' do
     expect(u.normalize_time('二十五時')).to eq '25:00'
     expect(u.normalize_time('十二時七十分')).to eq '12:70'

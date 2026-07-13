@@ -139,7 +139,8 @@ module Wareki
     end
 
     def to_simple_kan(num)
-      return SIMPLE_KANSUJI_CACHE[num].dup if num >= 0 && num < SIMPLE_KANSUJI_CACHE.length
+      return SIMPLE_KANSUJI_CACHE[num].dup if
+        num.is_a?(Integer) && num >= 0 && num < SIMPLE_KANSUJI_CACHE.length
 
       YaKansuji.to_kan(num, :simple)
     end
