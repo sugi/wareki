@@ -257,6 +257,14 @@ describe Wareki::Date do
     expect(described_class.new('寿永', 1, 1, 1).strftime('%JYK年%JM%JL月%JDK日')).to eq '寿永元年１月元日'
   end
 
+  it 'can parse its own strftime leap-month output' do
+    d = described_class.new('天和', 3, 5, 4, true)
+    expect(described_class.parse(d.strftime('%Jf')).to_date).to eq d.to_date
+    expect(described_class.parse("天和3年5'月4日").leap_month?).to be true
+    expect(described_class.parse('天和3年5’月4日').leap_month?).to be true
+    expect(described_class.parse('天和3年5月4日').leap_month?).to be false
+  end
+
   it 'can be formatted having compatibility with standard Date#strftime' do
     wareki_date = described_class.new('令和', 1, 5, 4)
     date = Date.new(2019, 5, 4)

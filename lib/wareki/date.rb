@@ -40,16 +40,18 @@ module Wareki
       month > 12 || month < 1 and
         raise ArgumentError, "Invalid month: #{str}"
 
+      is_leap = !!(match[:is_leap] || match[:is_leap_post])
+
       if match[:day]
         if match[:day] == '晦'
           civil_year = Utils.era_year_to_civil(era, year)
-          day = Utils.last_day_of_era_month(era, civil_year, month, !!match[:is_leap])
+          day = Utils.last_day_of_era_month(era, civil_year, month, is_leap)
         else
           day = Utils.k2i(match[:day])
         end
       end
 
-      {era: era, year: year, month: month, day: day, is_leap: !!match[:is_leap]}
+      {era: era, year: year, month: month, day: day, is_leap: is_leap}
     end
 
     def self.parse(str)

@@ -60,7 +60,7 @@ module Wareki
     (?:(?<era_name>紀元前|#{ERA_REGEX})?
       (?:(?<year>[元#{NUM_CHARS}]+)年))?
     (?:(?<is_leap>閏|潤|うるう)?
-      (?:(?<month>[正#{NUM_CHARS}]+)月 |
+      (?:(?<month>[正#{NUM_CHARS}]+)(?<is_leap_post>['’])?月 |
          (?<alt_month>#{ALT_MONTH_NAME.join('|')})))?
     (?:(?<day>[元朔晦#{NUM_CHARS}]+)日|元旦)?
   }x.freeze
