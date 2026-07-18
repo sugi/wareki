@@ -142,6 +142,16 @@ describe Wareki::Date do
     expect { described_class.new('令和', 2, 5, 4, true) }.to raise_error(ArgumentError, /invalid date/)
   end
 
+  it 'rejects non-integer years' do
+    expect { described_class.new('平成', 1.5) }.to raise_error(Wareki::InvalidDate)
+    expect { described_class.new('', 1989.5) }.to raise_error(Wareki::InvalidDate)
+    expect { described_class.new('平成', 2r) }.to raise_error(Wareki::InvalidDate)
+
+    d = described_class.new('平成', 31, 4, 30)
+    d.year = 2019.5
+    expect { d.jd }.to raise_error(Wareki::InvalidDate)
+  end
+
   it 'leaves the object unchanged when a writer raises' do
     d = described_class.parse('平成7年11月10日')
     expect { d.era_name = '謎元号' }.to raise_error(ArgumentError)
