@@ -155,6 +155,8 @@ module Wareki
     end
 
     def _validate_date!
+      year.is_a?(Integer) or
+        raise InvalidDate, "invalid date (non-integer year): #{inspect}"
       (month.is_a?(Integer) && month >= 1 && month <= 12) or
         raise InvalidDate, "invalid date (month out of range): #{inspect}"
       (day.is_a?(Integer) && day >= 1) or

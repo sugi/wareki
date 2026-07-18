@@ -152,7 +152,7 @@ describe Wareki::Utils do
     expected = {
       nil => '零',
       '1' => '一',
-      1.5 => '一',
+      1.5 => YaKansuji.to_kan(1.5, :simple),
     }
     allow(YaKansuji).to receive(:to_kan).and_call_original
 
